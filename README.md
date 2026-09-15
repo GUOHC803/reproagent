@@ -112,7 +112,7 @@ reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3
 - **单次调用基线只输在"必须执行才能得到数字"的任务上**（repo_run 3/7）：读得到的它都答得出，算不出的它会编——4 次"自称成功但错了"全部来自它。状态机的价值不在"多聪明"，在于**执行反馈**和**不让编造的数字进报告**。
 - **拿掉 REPAIR 掉 2 个任务**（90.9%）；full 里 3 个任务是靠修复救回的，代价是平均 token 多 20%，其中从进入修复起的开销占总量 12.9%。
 - **自由文本工具协议**成功率低 1 个任务，修复轮次 2.4 倍、p95 耗时 1.7 倍，并且出现了结构化协议下从未出现的 `no_progress`×4、`budget_exhausted`×2、`node_timeout`；唯一的失败是输出格式漂移（把整数字段答成了 `{value, evidence}` 对象）。**schema 买到的是稳定性和成本。**
-- 失败集中在 EXECUTE 节点（34 次节点失败中 20 次），失败类别 7 种，最大一类 `nonzero_exit` 占 42%。
+- 88 次运行共 34 个失败步骤（涉及 20 次运行），集中在 EXECUTE 节点（20/34 = 59%）；失败类别 7 种，最大一类 `nonzero_exit` 17/34 = 50%（`scripts/failure_stats.py`）。
 
 <!-- RESULTS:BEGIN -->
 来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）

@@ -98,7 +98,7 @@ Model `deepseek-v4.1-flash` (OpenAI-compatible relay via LiteLLM), 22 tasks x 4 
 - **The single-call baseline loses only where the answer must be computed** (repo_run 3/7). Whatever can be read, it answers; whatever must be run, it makes up - all four "claimed success but wrong" rows are its. The state machine's value is execution feedback and keeping invented numbers out of the report, not raw intelligence.
 - **Removing REPAIR costs 2 tasks** (90.9%); in `full`, 3 tasks were rescued by a repair round, at ~20% more tokens on average (12.9% of all tokens are spent from the first repair onward).
 - **Free-text tool protocol** is one task worse, with 2.4x the repair rounds, 1.7x the p95 latency, and failure kinds the structured protocol never produced (`no_progress` x4, `budget_exhausted` x2, `node_timeout`); its one failure is output-format drift (an integer field answered as a `{value, evidence}` object). **Schemas buy stability and cost.**
-- Failures concentrate in the EXECUTE node (20 of 34 node failures); 7 failure kinds were observed, the largest being `nonzero_exit` at 42%.
+- 88 runs produced 34 failed node steps (in 20 runs), concentrated in EXECUTE (20/34 = 59%); 7 failure kinds were observed, the largest being `nonzero_exit` at 17/34 = 50% (`scripts/failure_stats.py`).
 
 <!-- RESULTS:BEGIN -->
 来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）

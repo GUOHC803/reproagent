@@ -68,7 +68,7 @@
 | no_repair | 90.9% (20/22) | 6/7 | 3/4 | 0 | 51.2k | 75s | 234s | 1 |
 | single_call | 81.8% (18/22) | 3/7 | 4/4 | 0 | 11.2k | 15s | 31s | 4 |
 
-三句话结论：① single_call 只输在必须执行才能得到数字的任务，4 次"编数字"全是它；② 拿掉 REPAIR 掉 2 个任务，full 有 3 个任务靠修复救回，代价是 token 多 20%；③ 自由文本协议只少 1 个任务，但修复轮次 2.4×、p95 耗时 1.7×，还多出 no_progress/budget_exhausted/node_timeout 这些结构化协议下没有的失败。bug_fix 七个任务四种配置全过 → 注入的 bug 对这个模型偏简单，这是评测的已知短板。遇到的失败类别共 7 种（import_error、nonzero_exit、verify_mismatch、no_progress、budget_exhausted、node_timeout、file_not_found）。
+三句话结论：① single_call 只输在必须执行才能得到数字的任务，4 次"编数字"全是它；② 拿掉 REPAIR 掉 2 个任务，full 有 3 个任务靠修复救回，代价是 token 多 20%；③ 自由文本协议只少 1 个任务，但修复轮次 2.4×、p95 耗时 1.7×，还多出 no_progress/budget_exhausted/node_timeout 这些结构化协议下没有的失败。bug_fix 七个任务四种配置全过 → 注入的 bug 对这个模型偏简单，这是评测的已知短板。失败统计统一按"失败的节点步骤"计（`scripts/failure_stats.py`）：88 次运行共 34 个失败步骤，落在 20 次运行里。按类别 7 种：nonzero_exit 17（50%）、verify_mismatch 5（15%）、import_error 4（12%）、no_progress 4（12%）、budget_exhausted 2、node_timeout 1、file_not_found 1。按节点：execute 20（59%）、repair 6（18%）、verify 5（15%）、implement 3（9%）。full 配置自己只有 7 个失败步骤（3 次运行）：execute 5、repair 2；类别 import_error 4、nonzero_exit 3。
 
 ## 6. 评测的诚实边界（面试主动说）
 
