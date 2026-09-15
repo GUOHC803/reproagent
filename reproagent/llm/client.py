@@ -154,6 +154,14 @@ class LiteLLMClient:
             cost = float(litellm.completion_cost(completion_response=resp) or 0.0)
         except Exception:  # noqa: BLE001 - cost is best-effort
             cost = 0.0
+        if cost == 0.0:
+            # Unknown model to LiteLLM (e.g. a relay): use a manual price table, USD per 1M tokens.
+            try:
+                pin = float(os.environ.get("REPROAGENT_PRICE_INPUT_PER_M", "0") or 0)
+                pout = float(os.environ.get("REPROAGENT_PRICE_OUTPUT_PER_M", "0") or 0)
+                cost = (pt * pin + ct * pout) / 1e6
+            except ValueError:
+                cost = 0.0
         return LLMResponse(
             content=msg.content or "",
             tool_calls=calls,
