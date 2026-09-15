@@ -9,6 +9,13 @@ from statistics import mean
 from typing import Any
 
 
+def _p95(rows: list[dict[str, Any]], key: str) -> float:
+    vals = sorted(r[key] for r in rows if isinstance(r.get(key), (int, float)))
+    if not vals:
+        return 0.0
+    return vals[min(len(vals) - 1, int(round(0.95 * (len(vals) - 1))))]
+
+
 def _rate(rows: list[dict[str, Any]]) -> float:
     return sum(1 for r in rows if r.get("success")) / len(rows) if rows else 0.0
 
@@ -37,6 +44,8 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "avg_tokens": _avg(rs, "tokens"),
             "avg_cost_usd": _avg(rs, "cost_usd"),
             "avg_wall_time_s": _avg(rs, "wall_time_s"),
+            "p95_wall_time_s": _p95(rs, "wall_time_s"),
+            "p95_tokens": _p95(rs, "tokens"),
             "success_after_repair": len([r for r in rs if r.get("success") and (r.get("repairs") or 0) > 0]),
             "success_first_try": len([r for r in rs if r.get("success") and not r.get("repairs")]),
             "claimed_but_wrong": len([r for r in rs if r.get("agent_claimed_success") and not r.get("success")]),
@@ -52,13 +61,13 @@ def render_markdown(summary: dict[str, Any], rows: list[dict[str, Any]], meta: d
     L = [f"# ReproAgent evaluation - {meta.get('timestamp', '')}", "",
          f"model: `{meta.get('model')}` | tasks: {len(meta.get('tasks', []))} | repeats: {meta.get('repeats', 1)} | rows: {summary['n_rows']}", "",
          "## Success rate by configuration", "",
-         "| config | n | success | " + " | ".join(summary["categories"]) + " | avg repairs | avg tool calls | avg model calls | avg tokens | avg cost $ | avg s |",
-         "|---|---|---|" + "---|" * len(summary["categories"]) + "---|---|---|---|---|---|"]
+         "| config | n | success | " + " | ".join(summary["categories"]) + " | avg repairs | avg tool calls | avg model calls | avg tokens | p95 tokens | avg s | p95 s |",
+         "|---|---|---|" + "---|" * len(summary["categories"]) + "---|---|---|---|---|---|---|"]
     for c in cfgs:
         e = summary["configs"][c]
         cats = " | ".join(f"{e['by_category'][k]['success_rate']:.0%} ({e['by_category'][k]['n']})" for k in summary["categories"])
         L.append(f"| {c} | {e['n']} | **{e['success_rate']:.1%}** | {cats} | {e['avg_repairs']:.2f} | {e['avg_tool_calls']:.1f} | "
-                 f"{e['avg_llm_calls']:.1f} | {e['avg_tokens']:.0f} | {e['avg_cost_usd']:.4f} | {e['avg_wall_time_s']:.0f} |")
+                 f"{e['avg_llm_calls']:.1f} | {e['avg_tokens']:.0f} | {e['p95_tokens']:.0f} | {e['avg_wall_time_s']:.0f} | {e['p95_wall_time_s']:.0f} |")
     L += ["", "## Repair and verification", "", "| config | solved first try | solved after repair | claimed success but wrong |", "|---|---|---|---|"]
     for c in cfgs:
         e = summary["configs"][c]

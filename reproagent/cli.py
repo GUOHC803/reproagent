@@ -81,6 +81,12 @@ def run_task_cmd(
 
     raw = yaml.safe_load(task_file.read_text(encoding="utf-8"))
     src = dir or (task_file.parent / raw["source_dir"] if raw.get("source_dir") else None)
+    if raw.get("inject") and src is not None:
+        from .evals.runner import prepare_source
+
+        raw["_fixture"] = Path(src).resolve()
+        src = prepare_source(raw)  # apply the declared bug injection to a temp copy
+        console.print(f"[dim]injected bug into {raw['inject']['file']}: {raw.get('bug_note', '')}[/dim]")
     task = TaskSpec.model_validate({k: v for k, v in raw.items() if k in TaskSpec.model_fields})
     cfg = _load_config(config, model)
     if sandbox:

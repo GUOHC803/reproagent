@@ -6,6 +6,9 @@ runs/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
-evals/results/*/work/
+evals/results/*/runs/
+evals/results/*/trace.sqlite3
+evals/results_smoke/
 evals/fixtures/papers/*.pdf
 .reproagent/
+data/
