@@ -125,7 +125,7 @@ class LiteLLMClient:
             try:
                 resp = litellm.completion(**kwargs)
                 return self._convert(resp, time.time() - t0)
-            except Exception as e:  # noqa: BLE001 - we classify below
+            except Exception as e:
                 last_err = e
                 if not _is_retryable(e) or attempt == self.max_retries:
                     raise LLMError(f"{type(e).__name__}: {e}") from e

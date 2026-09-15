@@ -94,4 +94,4 @@ def write_summary(rows: list[dict[str, Any]], out_dir: Path, meta: dict[str, Any
 
 
 def load_rows(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]

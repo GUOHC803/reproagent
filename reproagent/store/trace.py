@@ -14,8 +14,9 @@ import json
 import sqlite3
 import threading
 import time
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS runs (

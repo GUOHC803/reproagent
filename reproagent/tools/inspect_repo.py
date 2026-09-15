@@ -13,8 +13,7 @@ from .base import Tool, ToolContext, ToolResult
 
 _SKIP_DIRS = {".git", "__pycache__", ".venv", "venv", "node_modules", ".pytest_cache", ".mypy_cache", ".ruff_cache",
               ".reproagent"}
-_TEXT_EXT = {".py", ".md", ".txt", ".yaml", ".yml", ".toml", ".json", ".cfg", ".ini", ".sh", ".csv", ".rst", ".txt",
-             ".env.example", ".html", ".js", ".ts", ".c", ".cpp", ".h", ".java", ".go", ".rs"}
+_TEXT_EXT = {".py", ".md", ".txt", ".yaml", ".yml", ".toml", ".json", ".cfg", ".ini", ".sh", ".csv", ".rst", ".env.example", ".html", ".js", ".ts", ".c", ".cpp", ".h", ".java", ".go", ".rs"}
 
 
 class InspectRepoParams(BaseModel):

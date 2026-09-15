@@ -12,7 +12,6 @@ subsumed by this return value.
 from __future__ import annotations
 
 import difflib
-from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator

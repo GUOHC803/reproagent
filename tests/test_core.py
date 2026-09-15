@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pydantic import BaseModel
+
 from reproagent.config import AgentConfig
 from reproagent.core.context import ContextManager, estimate_tokens
 from reproagent.core.failures import classify_exec
@@ -8,7 +10,6 @@ from reproagent.core.state import FailureKind, Node, NodeResult, Plan, TaskSpec,
 from reproagent.llm.client import MockLLMClient
 from reproagent.llm.structured import StructuredOutputError, ask_structured, extract_json
 from reproagent.sandbox.base import ExecResult
-from pydantic import BaseModel
 
 
 def _ex(code=1, out="", err="", to=False, blocked=None):
@@ -42,8 +43,8 @@ def _plan(code=True, run=True) -> Plan:
 
 def test_transitions():
     cfg = AgentConfig()
-    ok = lambda n: NodeResult(node=n, status="ok")  # noqa: E731
-    fail = lambda n, k: NodeResult(node=n, status="fail", failure=k)  # noqa: E731
+    ok = lambda n: NodeResult(node=n, status="ok")
+    fail = lambda n, k: NodeResult(node=n, status="fail", failure=k)
     assert next_node(_state(), ok(Node.PLAN), cfg) == Node.RETRIEVE
     assert next_node(_state(), fail(Node.PLAN, FailureKind.MODEL_OUTPUT_INVALID), cfg) == Node.FAILED
     assert next_node(_state(_plan()), ok(Node.RETRIEVE), cfg) == Node.IMPLEMENT

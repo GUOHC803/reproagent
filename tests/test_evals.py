@@ -57,7 +57,8 @@ def test_reference_checkers(tmp_path):
     tasks = {t["task_id"]: t for t in load_tasks(ROOT / "evals" / "tasks")}
     t = tasks["run_pi05_loss_min"]
     work = prepare_source(t)
-    import csv, json  # noqa: E401
+    import csv
+    import json
 
     best = {}
     for r in csv.DictReader((work / "results" / "loss_curves.csv").open()):

@@ -32,4 +32,4 @@ def get_config(name: str) -> AgentConfig:
 
 
 ALL_CONFIGS = ["full", "no_repair", "single_call", "free_text_tools", "no_verify"]
-__all__ = ["get_config", "ALL_CONFIGS", "Budget"]
+__all__ = ["ALL_CONFIGS", "Budget", "get_config"]

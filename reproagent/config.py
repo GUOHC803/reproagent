@@ -72,7 +72,7 @@ class AgentConfig(BaseModel):
     enable_verify: bool = True
     enable_context_compaction: bool = True
 
-    def with_updates(self, **kw) -> "AgentConfig":
+    def with_updates(self, **kw) -> AgentConfig:
         return self.model_copy(update=kw, deep=True)
 
 

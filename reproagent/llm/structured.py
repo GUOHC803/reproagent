@@ -11,7 +11,8 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -67,7 +68,7 @@ def ask_structured(
     }
     convo = [sys_hint, *messages]
     last_raw = ""
-    for attempt in range(max_attempts):
+    for _attempt in range(max_attempts):
         resp = client.chat(convo, json_mode=True, temperature=temperature)
         if on_response:
             on_response(resp)

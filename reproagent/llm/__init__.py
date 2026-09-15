@@ -1,4 +1,4 @@
-from .client import LLMClient, LLMResponse, LiteLLMClient, MockLLMClient, ReplayLLMClient, ToolCall
+from .client import LiteLLMClient, LLMClient, LLMResponse, MockLLMClient, ReplayLLMClient, ToolCall
 from .structured import StructuredOutputError, ask_structured
 
 __all__ = [
@@ -7,7 +7,7 @@ __all__ = [
     "LiteLLMClient",
     "MockLLMClient",
     "ReplayLLMClient",
-    "ToolCall",
     "StructuredOutputError",
+    "ToolCall",
     "ask_structured",
 ]

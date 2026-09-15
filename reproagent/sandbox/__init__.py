@@ -25,12 +25,12 @@ def build_sandbox(cfg: SandboxConfig, root: Path, *, confirm_callback=None) -> S
 
 
 __all__ = [
-    "ExecResult",
-    "Sandbox",
-    "LocalSandbox",
-    "DockerSandbox",
     "CommandPolicy",
+    "DockerSandbox",
+    "ExecResult",
+    "LocalSandbox",
     "PolicyDecision",
-    "scrub_env",
+    "Sandbox",
     "build_sandbox",
+    "scrub_env",
 ]

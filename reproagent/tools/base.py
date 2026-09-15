@@ -140,7 +140,7 @@ class ToolRegistry:
     def names(self) -> list[str]:
         return list(self._tools)
 
-    def subset(self, names: list[str]) -> "ToolRegistry":
+    def subset(self, names: list[str]) -> ToolRegistry:
         return ToolRegistry([self._tools[n] for n in names if n in self._tools])
 
     def schemas(self) -> list[dict[str, Any]]:

@@ -15,8 +15,8 @@ bug in the task, not a capability gap.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 # Patterns that are never allowed.
 DENY_PATTERNS: list[tuple[str, str]] = [

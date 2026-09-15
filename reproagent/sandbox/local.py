@@ -10,6 +10,7 @@ for untrusted repositories.
 from __future__ import annotations
 
 import os
+import shlex
 import signal
 import subprocess
 import sys
@@ -52,21 +53,15 @@ class LocalSandbox:
         # fixtures can import numpy/pytest without a network install step).
         self.python = python or sys.executable
 
-    def _preexec(self):
-        def fn() -> None:
-            os.setsid()  # own process group -> we can kill children on timeout
-            try:
-                import resource
-
-                if self.memory_bytes:
-                    resource.setrlimit(resource.RLIMIT_AS, (self.memory_bytes, self.memory_bytes))
-                resource.setrlimit(resource.RLIMIT_CPU, (self.cpu_seconds, self.cpu_seconds + 5))
-                resource.setrlimit(resource.RLIMIT_NPROC, (self.max_procs, self.max_procs))
-                resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-            except (ImportError, ValueError, OSError):
-                pass
-
-        return fn
+    def _limits_prefix(self) -> str:
+        """Resource limits applied with the shell's ulimit in the child (no preexec_fn -> thread-safe)."""
+        parts = []
+        if self.memory_bytes:
+            parts.append(f"ulimit -v {self.memory_bytes // 1024}")
+        parts.append(f"ulimit -t {self.cpu_seconds}")
+        parts.append(f"ulimit -u {self.max_procs}")
+        parts.append("ulimit -c 0")
+        return "; ".join(parts) + "; "
 
     def run(self, command: str, *, cwd: Path, timeout_s: float, env: dict[str, str] | None = None) -> ExecResult:
         cwd = Path(cwd).resolve()
@@ -83,14 +78,15 @@ class LocalSandbox:
         run_env["REPROAGENT_SANDBOX"] = "local"
 
         t0 = time.time()
+        wrapped = self._limits_prefix() + "exec /bin/bash -o pipefail -c " + shlex.quote(command)
         proc = subprocess.Popen(
-            ["/bin/bash", "-o", "pipefail", "-c", command],
+            ["/bin/bash", "-c", wrapped],
             cwd=str(cwd),
             env=run_env,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             stdin=subprocess.DEVNULL,
-            preexec_fn=self._preexec(),
+            start_new_session=True,  # own process group -> we can kill children on timeout
             text=True,
             errors="replace",
         )

@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 import yaml
@@ -43,14 +42,14 @@ def _load_config(name: str | None, model: str | None) -> AgentConfig:
 @app.command()
 def run(
     goal: str = typer.Argument(..., help="What to do."),
-    dir: Optional[Path] = typer.Option(None, "--dir", "-d", help="Repository / material directory (copied)."),
-    pdf: Optional[str] = typer.Option(None, help="PDF path relative to --dir."),
-    command: Optional[str] = typer.Option(None, help="Command EXECUTE should run."),
+    dir: Path | None = typer.Option(None, "--dir", "-d", help="Repository / material directory (copied)."),
+    pdf: str | None = typer.Option(None, help="PDF path relative to --dir."),
+    command: str | None = typer.Option(None, help="Command EXECUTE should run."),
     criteria: str = typer.Option("", help="Success criteria for VERIFY."),
     category: str = typer.Option("custom", help="paper_extraction|repo_locate|repo_run|bug_fix|custom"),
     config: str = typer.Option("full", help="full | no_repair | single_call | free_text_tools | no_verify"),
-    model: Optional[str] = typer.Option(None, help="LiteLLM model name, e.g. deepseek/deepseek-chat"),
-    sandbox: Optional[str] = typer.Option(None, help="local | docker"),
+    model: str | None = typer.Option(None, help="LiteLLM model name, e.g. deepseek/deepseek-chat"),
+    sandbox: str | None = typer.Option(None, help="local | docker"),
     no_copy: bool = typer.Option(False, help="Work in --dir directly instead of a copy (dangerous)."),
 ):
     """Run one task."""
@@ -72,10 +71,10 @@ def run(
 @app.command("run-task")
 def run_task_cmd(
     task_file: Path = typer.Argument(..., help="YAML/JSON task spec."),
-    dir: Optional[Path] = typer.Option(None, "--dir", "-d", help="Material directory (default: task's `source_dir`)."),
+    dir: Path | None = typer.Option(None, "--dir", "-d", help="Material directory (default: task's `source_dir`)."),
     config: str = typer.Option("full"),
-    model: Optional[str] = typer.Option(None),
-    sandbox: Optional[str] = typer.Option(None),
+    model: str | None = typer.Option(None),
+    sandbox: str | None = typer.Option(None),
 ):
     """Run a task defined in a file (same format as evals/tasks/*.yaml)."""
     from .runner import run_task
@@ -134,7 +133,7 @@ def show(run_id: str):
 
 
 @app.command()
-def replay(run_id: str, node: Optional[str] = None):
+def replay(run_id: str, node: str | None = None):
     """Print the model conversation of a run (optionally one node) - for debugging prompts."""
     st = load_settings()
     store = TraceStore(st.resolved_db_path)
@@ -151,11 +150,11 @@ def replay(run_id: str, node: Optional[str] = None):
 def eval(
     tasks: Path = typer.Option(Path("evals/tasks"), help="Task directory."),
     configs: str = typer.Option("full", help="Comma-separated config names."),
-    model: Optional[str] = typer.Option(None),
-    only: Optional[str] = typer.Option(None, help="Comma-separated task ids."),
+    model: str | None = typer.Option(None),
+    only: str | None = typer.Option(None, help="Comma-separated task ids."),
     repeats: int = typer.Option(1, help="Runs per task (results are aggregated)."),
     out: Path = typer.Option(Path("evals/results"), help="Where to write results."),
-    sandbox: Optional[str] = typer.Option(None),
+    sandbox: str | None = typer.Option(None),
     workers: int = typer.Option(1, help="Parallel tasks."),
 ):
     """Run the offline evaluation set."""

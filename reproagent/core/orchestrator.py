@@ -13,8 +13,9 @@ from __future__ import annotations
 
 import concurrent.futures as cf
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from ..config import AgentConfig
 from ..llm.client import LLMClient

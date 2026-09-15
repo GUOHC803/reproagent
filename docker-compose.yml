@@ -1,0 +1,12 @@
+services:
+  api:
+    build: .
+    image: reproagent:latest
+    ports: ["8000:8000"]
+    env_file: [.env]
+    environment:
+      REPROAGENT_DATA_DIR: /data/runs
+      REPROAGENT_SANDBOX_BACKEND: local   # set to docker + mount the socket below for container isolation
+    volumes:
+      - ./data:/data
+      # - /var/run/docker.sock:/var/run/docker.sock
