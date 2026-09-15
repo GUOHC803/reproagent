@@ -1,0 +1,24 @@
+task_id: locate_textstats
+category: repo_locate
+source_dir: ../fixtures/textstats
+goal: >
+  Inspect the textstats library and report: how many default stopwords there are, the exact IDF formula used by
+  tfidf (as written in the docstring), which file defines ngrams, whether TF-IDF uses smoothing, and the module
+  that implements the command-line interface.
+inputs:
+  repo: "."
+  fields:
+    default_stopwords_count: number of entries in DEFAULT_STOPWORDS (integer)
+    idf_formula: IDF formula as written in the docstring (string)
+    ngrams_file: file path defining ngrams (string)
+    tfidf_smoothing: whether smoothing is applied to IDF (true/false)
+    cli_module: dotted module path of the CLI (string)
+success_criteria: All five fields answered from the source with file:line evidence.
+check:
+  - type: fields
+    expected:
+      default_stopwords_count: 10
+      idf_formula: ["log(N / df)", "log(N/df)"]
+      ngrams_file: "stats.py"
+      tfidf_smoothing: false
+      cli_module: "textstats.cli"

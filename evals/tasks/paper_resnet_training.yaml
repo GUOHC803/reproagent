@@ -1,0 +1,31 @@
+task_id: paper_resnet_training
+category: paper_extraction
+source_dir: ../fixtures/papers
+goal: >
+  From "Deep Residual Learning for Image Recognition" (1512.03385.pdf) extract the ImageNet training recipe
+  (mini-batch size, initial learning rate, weight decay, momentum, maximum iterations), the depth of the deepest
+  evaluated ImageNet model, the ensemble top-5 error on the ImageNet test set, and the number of ImageNet
+  training images.
+inputs:
+  pdf: 1512.03385.pdf
+  fields:
+    batch_size: SGD mini-batch size (integer)
+    initial_lr: initial learning rate (float)
+    weight_decay: weight decay (float)
+    momentum: momentum (float)
+    max_iterations: maximum number of training iterations (integer)
+    deepest_model_layers: depth of the deepest ImageNet residual net evaluated (integer)
+    ensemble_top5_error: ensemble top-5 error on the ImageNet test set, in percent (float)
+    train_images: number of ImageNet training images (integer)
+success_criteria: All eight fields filled from Section 3.4 / Section 4.1 / the abstract.
+check:
+  - type: fields
+    expected:
+      batch_size: 256
+      initial_lr: 0.1
+      weight_decay: 0.0001
+      momentum: 0.9
+      max_iterations: 600000
+      deepest_model_layers: 152
+      ensemble_top5_error: 3.57
+      train_images: 1280000

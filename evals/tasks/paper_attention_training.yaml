@@ -1,0 +1,30 @@
+task_id: paper_attention_training
+category: paper_extraction
+source_dir: ../fixtures/papers
+goal: >
+  From the paper "Attention Is All You Need" (1706.03762.pdf), extract the training setup and headline result:
+  number of GPUs, training steps for the base and big models, warmup steps, dropout rate, label smoothing value,
+  model dimension d_model, and the English-to-German BLEU score of the big model.
+inputs:
+  pdf: 1706.03762.pdf
+  fields:
+    gpu_count: number of GPUs used for training (integer)
+    base_model_steps: total training steps of the base model (integer)
+    big_model_steps: total training steps of the big model (integer)
+    warmup_steps: learning-rate warmup steps (integer)
+    dropout: residual dropout rate P_drop used for the base model (float)
+    label_smoothing: label smoothing epsilon (float)
+    d_model: model dimension (integer)
+    en_de_bleu_big: WMT 2014 English-to-German BLEU of the Transformer (big) (float)
+success_criteria: All eight fields filled with values taken from the paper text (Sections 5 and 6).
+check:
+  - type: fields
+    expected:
+      gpu_count: 8
+      base_model_steps: 100000
+      big_model_steps: 300000
+      warmup_steps: 4000
+      dropout: 0.1
+      label_smoothing: 0.1
+      d_model: 512
+      en_de_bleu_big: 28.4

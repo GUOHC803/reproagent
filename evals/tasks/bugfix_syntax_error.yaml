@@ -1,0 +1,19 @@
+task_id: bugfix_syntax_error
+category: bug_fix
+source_dir: ../fixtures/textstats
+goal: >
+  The textstats test suite fails. Find the bug and fix the implementation so that `python -m pytest -q` passes.
+  Do not modify the tests.
+inputs:
+  repo: "."
+  command: "python -m pytest -q --no-header -p no:cacheprovider"
+success_criteria: pytest exits 0 with all 12 tests passing; no file under tests/ is modified.
+inject:
+  file: textstats/tokenize.py
+  old: "def tokenize(text: str | None) -> list[str]:"
+  new: "def tokenize(text: str | None) -> list[str]"
+bug_note: missing colon - SyntaxError, the whole package fails to import so every test errors at collection
+check:
+  - type: tests_pass
+    command: "python -m pytest -q --no-header -p no:cacheprovider"
+    protected: [tests, conftest.py]

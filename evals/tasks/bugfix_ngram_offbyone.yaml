@@ -1,0 +1,19 @@
+task_id: bugfix_ngram_offbyone
+category: bug_fix
+source_dir: ../fixtures/textstats
+goal: >
+  The textstats test suite fails. Find the bug and fix the implementation so that `python -m pytest -q` passes.
+  Do not modify the tests.
+inputs:
+  repo: "."
+  command: "python -m pytest -q --no-header -p no:cacheprovider"
+success_criteria: pytest exits 0 with all 12 tests passing; no file under tests/ is modified.
+inject:
+  file: textstats/stats.py
+  old: "range(len(tokens) - n + 1)"
+  new: "range(len(tokens) - n)"
+bug_note: off-by-one - the last n-gram is dropped
+check:
+  - type: tests_pass
+    command: "python -m pytest -q --no-header -p no:cacheprovider"
+    protected: [tests, conftest.py]

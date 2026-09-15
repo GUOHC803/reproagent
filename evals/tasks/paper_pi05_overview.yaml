@@ -1,0 +1,24 @@
+task_id: paper_pi05_overview
+category: paper_extraction
+source_dir: ../fixtures/papers
+goal: >
+  From the pi0.5 paper (2504.16054.pdf) extract how the model is trained: the number of training stages and their
+  names, how actions are represented during pre-training, how actions are produced in post-training, and the
+  parameter count of the action expert.
+inputs:
+  pdf: 2504.16054.pdf
+  fields:
+    num_training_stages: number of training stages (integer)
+    stage_names: list of the stage names in order
+    pretraining_action_representation: how actions are represented in pre-training (short phrase)
+    posttraining_action_method: the generative method used for actions in post-training (short phrase)
+    action_expert_params: parameter count of the action expert (string with unit)
+success_criteria: All five fields filled from the model overview (Fig. 3 caption and Section IV).
+check:
+  - type: fields
+    expected:
+      num_training_stages: 2
+      stage_names: ["pre-training", "post-training"]
+      pretraining_action_representation: ["discrete token", "tokeniz"]
+      posttraining_action_method: "flow matching"
+      action_expert_params: "300M"

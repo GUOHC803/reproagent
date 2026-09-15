@@ -1,0 +1,37 @@
+task_id: run_pi05_loss_min
+category: repo_run
+source_dir: ../fixtures/pi05_snapshot
+goal: >
+  results/loss_curves.csv holds training-loss curves for several runs (columns run, step, loss). For every run,
+  compute the minimum loss and the step at which it occurs, and write them to summary.json in the repository root
+  as {"<run name>": {"min_loss": float, "step": int}}. Report the run with the lowest minimum loss.
+inputs:
+  repo: "."
+  fields:
+    best_run: name of the run with the lowest minimum loss (string)
+    best_min_loss: its minimum loss (float)
+success_criteria: summary.json exists, has one entry per run, and the values match the CSV.
+expected_outputs: [summary.json]
+check:
+  - type: reference_script
+    file: summary.json
+    script: |
+      import csv, json
+      best = {}
+      for r in csv.DictReader(open("results/loss_curves.csv")):
+          v = float(r["loss"]); s = int(r["step"]); k = r["run"]
+          if k not in best or v < best[k]["min_loss"]:
+              best[k] = {"min_loss": v, "step": s}
+      print(json.dumps(best))
+    tolerance: 1.0e-6
+  - type: fields_from_script
+    script: |
+      import csv, json
+      best = {}
+      for r in csv.DictReader(open("results/loss_curves.csv")):
+          v = float(r["loss"]); k = r["run"]
+          if k not in best or v < best[k]:
+              best[k] = v
+      k = min(best, key=best.get)
+      print(json.dumps({"best_run": k, "best_min_loss": best[k]}))
+    tolerance: 1.0e-4

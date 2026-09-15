@@ -1,0 +1,27 @@
+task_id: paper_lora_setup
+category: paper_extraction
+source_dir: ../fixtures/papers
+goal: >
+  From the LoRA paper (2106.09685.pdf) extract: by what factor LoRA reduces the number of trainable parameters
+  and the GPU memory requirement on GPT-3 175B, the LoRA checkpoint size for GPT-3 175B, the full fine-tuning
+  checkpoint size it is compared against, the NLU benchmark used for RoBERTa/DeBERTa, and the generation
+  dataset used for GPT-2.
+inputs:
+  pdf: 2106.09685.pdf
+  fields:
+    trainable_param_reduction: factor by which trainable parameters are reduced on GPT-3 175B (integer)
+    gpu_memory_reduction: factor by which GPU memory is reduced (integer)
+    lora_checkpoint_size: LoRA checkpoint size for GPT-3 175B (string with unit)
+    full_checkpoint_size: full fine-tuning checkpoint size for GPT-3 175B (string with unit)
+    nlu_benchmark: benchmark used to evaluate RoBERTa and DeBERTa (string)
+    gpt2_generation_dataset: generation benchmark used for GPT-2 (string)
+success_criteria: All six fields filled from the abstract, Section 4.2 and Section 5.
+check:
+  - type: fields
+    expected:
+      trainable_param_reduction: 10000
+      gpu_memory_reduction: 3
+      lora_checkpoint_size: "35MB"
+      full_checkpoint_size: "350GB"
+      nlu_benchmark: "GLUE"
+      gpt2_generation_dataset: "E2E"

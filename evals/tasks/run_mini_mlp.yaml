@@ -1,0 +1,25 @@
+task_id: run_mini_mlp
+category: repo_run
+source_dir: ../fixtures/mini_mlp
+goal: >
+  Train the mini_mlp model for 100 epochs with learning rate 0.3, hidden size 8 and seed 1, writing the metrics
+  to results.json in the repository root. Report the final loss and the test accuracy.
+inputs:
+  repo: "."
+  fields:
+    final_loss: final training loss (float)
+    test_accuracy: held-out accuracy (float)
+success_criteria: results.json exists with epochs=100, lr=0.3, hidden=8, seed=1, and the reported numbers match it.
+expected_outputs: [results.json]
+check:
+  - type: reference_json
+    file: results.json
+    command: "python train.py --epochs 100 --lr 0.3 --hidden 8 --seed 1 --out results.json"
+    fields: [final_loss, test_accuracy, epochs, lr, hidden, seed]
+    tolerance: 1.0e-4
+  - type: fields_from_reference
+    file: results.json
+    map:
+      final_loss: final_loss
+      test_accuracy: test_accuracy
+    tolerance: 1.0e-3

@@ -1,0 +1,11 @@
+checkpoints
+checkpoints/pi05_libero_lora
+checkpoints/pi05_libero_lora/lora_run1_bs16
+checkpoints/pi05_libero_lora/lora_run1_bs16/3999
+checkpoints/pi05_libero_lora/lora_25
+checkpoints/pi05_libero_lora/lora_25/3999
+checkpoints/pi05_libero_lora/lora_50
+checkpoints/pi05_libero_lora/lora_50/3999
+5.9G	checkpoints/pi05_libero_lora/lora_25
+5.9G	checkpoints/pi05_libero_lora/lora_50
+5.9G	checkpoints/pi05_libero_lora/lora_run1_bs16

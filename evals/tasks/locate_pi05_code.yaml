@@ -1,0 +1,29 @@
+task_id: locate_pi05_code
+category: repo_locate
+source_dir: ../fixtures/pi05_snapshot
+goal: >
+  Find in the scripts and ablation files of this repository: the environment variable that passes an episode
+  subset to training, the value of --args.num-trials-per-task used by the ablation evaluation script, the two
+  ablation client scripts under ablations/, the document describing the lerobot subset-indexing fix, and how
+  many episode ids are listed in ablations/spatial_episodes.json and ablations/spatial_eps_25.json.
+inputs:
+  repo: "."
+  fields:
+    episodes_env_var: environment variable name (string)
+    ablation_trials_per_task: value passed to --args.num-trials-per-task in scripts/stage3.sh (integer)
+    ablation_scripts: list of the two python files under ablations/
+    lerobot_fix_doc: path of the markdown file describing the lerobot fix (string)
+    n_episodes_full: number of ids in ablations/spatial_episodes.json (integer)
+    n_episodes_25: number of ids in ablations/spatial_eps_25.json (integer)
+success_criteria: All six fields answered from the files (counting the JSON lists exactly).
+hints:
+  - "Counting a JSON list may be easier by running a one-line python command than by reading it."
+check:
+  - type: fields
+    expected:
+      episodes_env_var: "OPENPI_EPISODES_FILE"
+      ablation_trials_per_task: 20
+      ablation_scripts: ["main_rephrase.py", "main_perturb.py"]
+      lerobot_fix_doc: "lerobot_subset_fix.md"
+      n_episodes_full: 432
+      n_episodes_25: 103

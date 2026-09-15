@@ -1,0 +1,25 @@
+task_id: locate_mini_mlp
+category: repo_locate
+source_dir: ../fixtures/mini_mlp
+goal: >
+  Read the mini_mlp repository and report: the name of the loss function and the file it lives in, the default
+  learning rate and hidden size, the hidden-layer activation, and the fraction of samples used for training.
+inputs:
+  repo: "."
+  fields:
+    loss_function_name: name of the loss function (string)
+    loss_file: path of the file defining it (string)
+    default_lr: default learning rate from the config (float)
+    default_hidden: default hidden size (integer)
+    hidden_activation: hidden-layer activation function (string)
+    train_fraction: fraction of samples used for training (float)
+success_criteria: All six fields filled from the code and config.yaml, with file:line evidence.
+check:
+  - type: fields
+    expected:
+      loss_function_name: "bce_loss"
+      loss_file: "model.py"
+      default_lr: 0.5
+      default_hidden: 16
+      hidden_activation: "tanh"
+      train_fraction: 0.8

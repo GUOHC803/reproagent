@@ -1,0 +1,27 @@
+task_id: locate_pi05_readme
+category: repo_locate
+source_dir: ../fixtures/pi05_snapshot
+goal: >
+  This repository documents a pi0.5 LoRA fine-tuning study on LIBERO. From the README (English version is
+  README_en.md) report: trials per task used for the official-checkpoint evaluation, trials per task used for the
+  ablations, the LoRA batch size, the number of training steps, the training memory in GB, and the number of
+  trainable LoRA parameters.
+inputs:
+  repo: "."
+  fields:
+    trials_official: trials per task in the official checkpoint evaluation (integer)
+    trials_ablation: trials per task in the ablations (integer)
+    lora_batch_size: batch size used for LoRA fine-tuning (integer)
+    lora_steps: number of LoRA training steps (integer)
+    lora_train_memory_gb: training memory in GB (float)
+    lora_trainable_params: number of trainable LoRA parameters (string with unit, e.g. "50M")
+success_criteria: All six fields filled from README_en.md with line evidence.
+check:
+  - type: fields
+    expected:
+      trials_official: 50
+      trials_ablation: 20
+      lora_batch_size: 16
+      lora_steps: 4000
+      lora_train_memory_gb: 22.1
+      lora_trainable_params: "50"

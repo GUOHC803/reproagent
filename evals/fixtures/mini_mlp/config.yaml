@@ -1,0 +1,7 @@
+# Default hyper-parameters for train.py (CLI flags override these).
+epochs: 200
+lr: 0.5
+hidden: 16
+seed: 0
+n_samples: 400
+noise: 0.15

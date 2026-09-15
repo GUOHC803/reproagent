@@ -1,0 +1,6 @@
+openpi commit: 15a9616a00943ada6c20a0f158e3adb39df2ccac 2026-06-16 00:14:00 +0000
+source = { git = "https://github.com/huggingface/lerobot?rev=0cf864870cf29f4738d3ade893e6fd13fbd7cdb5#0cf864870cf29f4738d3ade893e6fd13fbd7cdb5" }
+python 3.11.16
+jax 0.5.3
+name, driver_version
+NVIDIA GeForce RTX 4090, 570.124.04

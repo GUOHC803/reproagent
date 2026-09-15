@@ -1,0 +1,21 @@
+task_id: run_textstats_cli
+category: repo_run
+source_dir: ../fixtures/textstats
+goal: >
+  Create a file sample.txt containing exactly the sentence
+  "The quick brown fox jumps over the lazy dog. The dog sleeps and the fox runs."
+  then run the textstats command-line interface on it with --top 3 and report the number of tokens, the number
+  of unique tokens and the top-3 list it prints.
+inputs:
+  repo: "."
+  fields:
+    tokens: total tokens after stopword removal (integer)
+    unique: number of unique tokens (integer)
+    top: the top-3 list as printed (list of [word, count])
+success_criteria: The reported numbers are exactly what `python -m textstats.cli sample.txt --top 3` prints.
+check:
+  - type: fields
+    expected:
+      tokens: 11
+      unique: 9
+      top: ["dog", "fox", "brown"]
