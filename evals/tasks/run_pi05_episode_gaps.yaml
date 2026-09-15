@@ -3,16 +3,15 @@ category: repo_run
 source_dir: ../fixtures/pi05_snapshot
 goal: >
   ablations/spatial_episodes.json, spatial_eps_50.json and spatial_eps_25.json are lists of episode ids. For each
-  file report the number of ids, the smallest and largest id, and how many integers in [min, max] are NOT in the
-  list (the gaps). Also report how many ids of spatial_eps_25.json are not contained in spatial_eps_50.json.
-  Write everything to episodes.json in the repository root.
+  file report the number of ids, the smallest and largest id, how many integers in [min, max] are NOT in the list
+  (the gaps), and the sum of all ids. Write everything to episodes.json in the repository root, one object per file.
 inputs:
   repo: "."
   fields:
     full_count: number of ids in spatial_episodes.json (integer)
-    full_gaps: number of missing integers between min and max of spatial_episodes.json (integer)
-    eps50_gaps: same for spatial_eps_50.json (integer)
-    eps25_not_in_50: ids in spatial_eps_25.json that are not in spatial_eps_50.json (integer)
+    eps50_gaps: number of missing integers between min and max of spatial_eps_50.json (integer)
+    eps25_gaps: same for spatial_eps_25.json (integer)
+    eps50_sum: sum of all ids in spatial_eps_50.json (integer)
 success_criteria: episodes.json exists and the four reported numbers match the files exactly.
 expected_outputs: [episodes.json]
 check:
@@ -23,6 +22,5 @@ check:
       e50 = json.load(open("ablations/spatial_eps_50.json"))
       e25 = json.load(open("ablations/spatial_eps_25.json"))
       gaps = lambda l: (max(l) - min(l) + 1) - len(set(l))
-      print(json.dumps({"full_count": len(full), "full_gaps": gaps(full), "eps50_gaps": gaps(e50),
-                        "eps25_not_in_50": len(set(e25) - set(e50))}))
+      print(json.dumps({"full_count": len(full), "eps50_gaps": gaps(e50), "eps25_gaps": gaps(e25), "eps50_sum": sum(e50)}))
     tolerance: 0
