@@ -11,7 +11,7 @@ ReproAgent 接收一篇论文、一个代码仓库或一个研究问题，跑完
 - **三层沙箱**：命令策略黑名单 → 资源限制（ulimit / cgroup）→ 隔离（目录锁定、环境变量白名单、Docker 无网络只读根）。
 - **失败分类 + 有限修复 + 离线评测**：17 种失败类型的规则分类器；REPAIR 节点带类别修复、上限可配；22 个固定任务、确定性判定、四组消融。
 
-项目的来历：2026 年 8 月我手动复现 π₀.₅（[pi05-libero-reproduction](https://github.com/GUOHC803/pi05-libero-reproduction)），三天里踩了 13 个坑——找入口、改配置、缺依赖、显存爆、检查点写满磁盘。ReproAgent 把这些痛点做成了工具和失败分类；评测集里的 `pi05_snapshot` 就是那个仓库的快照。
+这个项目从复现 π₀.₅ 的经历里来（[pi05-libero-reproduction](https://github.com/GUOHC803/pi05-libero-reproduction)）。复现一篇论文的代码，大部分时间不在算法上，而在找入口、对配置、补依赖、看报错再改——每一步都得跑了才知道对不对。ReproAgent 把这个循环交给 agent 去做，同时保证它跑得有边界、结果可验证、过程可追溯。评测集里的 `pi05_snapshot` 就是那个复现仓库的快照。
 
 ## 一次完整运行
 
