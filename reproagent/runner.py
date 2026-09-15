@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -41,7 +42,23 @@ def prepare_workdir(source: Path | None, dest: Path, *, copy: bool) -> Path:
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(source, dest, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", ".pytest_cache"))
+    _git_baseline(dest)
     return dest.resolve()
+
+
+def _git_baseline(workdir: Path) -> None:
+    """Make the copy a git repo with one baseline commit so `git diff` shows exactly what the agent changed."""
+    import subprocess
+
+    if not shutil.which("git"):
+        return
+    env = {**os.environ, "GIT_AUTHOR_NAME": "reproagent", "GIT_AUTHOR_EMAIL": "agent@local",
+           "GIT_COMMITTER_NAME": "reproagent", "GIT_COMMITTER_EMAIL": "agent@local"}
+    try:
+        for cmd in (["git", "init", "-q"], ["git", "add", "-A"], ["git", "commit", "-q", "-m", "baseline", "--allow-empty"]):
+            subprocess.run(cmd, cwd=workdir, env=env, capture_output=True, timeout=60, check=False)
+    except (OSError, subprocess.SubprocessError):
+        pass
 
 
 def run_task(
