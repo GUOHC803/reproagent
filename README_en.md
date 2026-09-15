@@ -18,8 +18,8 @@ Four engineering points carry the project:
 - **Three-layer sandbox**: command policy deny-list → resource limits (ulimit / cgroups)
   → isolation (workdir jail, environment allow-list, Docker with no network and a read-only root).
 - **Failure taxonomy + bounded repair + offline evaluation**: a rule-based classifier for 17
-  failure kinds; a REPAIR node conditioned on the kind with a configurable cap; 17 fixed tasks,
-  deterministic checkers, five ablation arms.
+  failure kinds; a REPAIR node conditioned on the kind with a configurable cap; 22 fixed tasks,
+  deterministic checkers, four ablation arms.
 
 Where it comes from: in August 2026 I reproduced π₀.₅ by hand
 ([pi05-libero-reproduction](https://github.com/GUOHC803/pi05-libero-reproduction)) and hit 13
@@ -73,18 +73,18 @@ Design notes, alternatives and limitations per module live in `docs/design/` (Ch
 
 ## Evaluation
 
-17 fixed tasks (`evals/tasks/`), four categories, all judged deterministically (no model-as-judge):
+22 fixed tasks (`evals/tasks/`), four categories, all judged deterministically (no model-as-judge):
 
 | category | n | material | checker |
 |---|---|---|---|
 | paper_extraction | 4 | Attention / LoRA / ResNet / π₀.₅ arXiv PDFs | fields vs hand-verified ground truth, tolerant matching |
 | repo_locate | 4 | mini_mlp, textstats, pi05_snapshot (a real repository) | same |
-| repo_run | 3 | train a small model, CSV statistics, run a CLI | the checker **recomputes** ground truth on a pristine fixture |
-| bug_fix | 6 | textstats with six injected bugs (declared in the task YAML) | pytest exits 0 **and** test files are hash-identical |
+| repo_run | 7 | train a small model, CSV statistics, episode-list statistics, TF-IDF, run a CLI | the checker **recomputes** ground truth on a pristine fixture |
+| bug_fix | 7 | textstats with six single-site bugs and one two-bug case (declared in the task YAML) | pytest exits 0 **and** test files are hash-identical |
 
-Five configurations (`reproagent/evals/configs.py`): `full`, `no_repair` (max_repairs=0),
+Four configurations (`reproagent/evals/configs.py`): `full`, `no_repair` (max_repairs=0),
 `single_call` (one model call, no tools, no state machine; the material is pasted into the prompt),
-`free_text_tools` (tools via free-text blocks, no schema / status / next_hint), `no_verify` (no model judge).
+`free_text_tools` (tools via free-text blocks, no schema / status / next_hint).
 
 ```bash
 reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3

@@ -9,7 +9,7 @@ ReproAgent 接收一篇论文、一个代码仓库或一个研究问题，跑完
 - **状态机编排**而不是一个大 Prompt 循环：七个节点、显式转移规则、预算上限、节点超时、逐节点检查点（`reproagent/core/orchestrator.py`，约 150 行）。
 - **显式 schema 的工具协议**：六个工具，参数用 Pydantic 定义并导出为 function-calling schema，统一返回 `status / stdout / stderr / artifacts / next_hint`，节点级工具白名单。
 - **三层沙箱**：命令策略黑名单 → 资源限制（ulimit / cgroup）→ 隔离（目录锁定、环境变量白名单、Docker 无网络只读根）。
-- **失败分类 + 有限修复 + 离线评测**：17 种失败类型的规则分类器；REPAIR 节点带类别修复、上限可配；17 个固定任务、确定性判定、五组消融。
+- **失败分类 + 有限修复 + 离线评测**：17 种失败类型的规则分类器；REPAIR 节点带类别修复、上限可配；22 个固定任务、确定性判定、四组消融。
 
 项目的来历：2026 年 8 月我手动复现 π₀.₅（[pi05-libero-reproduction](https://github.com/GUOHC803/pi05-libero-reproduction)），三天里踩了 13 个坑——找入口、改配置、缺依赖、显存爆、检查点写满磁盘。ReproAgent 把这些痛点做成了工具和失败分类；评测集里的 `pi05_snapshot` 就是那个仓库的快照。
 
@@ -35,18 +35,27 @@ reproagent replay <run_id> --node repair   # 回放某节点的完整对话
 reproagent resume <run_id>         # 从检查点恢复
 ```
 
-一次 bug 修复运行的步骤轨迹（真实输出，`reproagent show`）：
+两次评测运行的步骤轨迹（trace 库原样导出，`scripts/trace_table.py`）：
 
 ```
-#  node       status  failure        tools  llm  tokens
-0  plan       ok                     0      1    1.9k
-1  retrieve   ok                     3      2    9.8k     ← 先跑测试复现，再读 traceback 里的文件
-2  implement  ok                     2      2    6.1k     ← patch_file 返回 diff
-3  execute    fail    test_failure   1      0    0        ← 不调模型；分类器给出 kind/file/line
-4  repair     ok                     2      2    5.4k
-5  execute    ok                     1      0    0
-6  verify     ok                     0      1    1.2k     ← 确定性检查 AND 模型裁判
-7  report     ok                     0      1    0.9k
+== full-bugfix_tfidf_sign（注入 bug：IDF 写成 log(df/N)）  status=done
+#  node       status failure       tools llm  tokens    s  message
+0  plan       ok                       0   1    3215   15  type=bug_fix, code_change=True, execution=True
+1  retrieve   ok                       8   7   26452   16  跑测试复现：test_tfidf_values 失败，IDF 公式反了
+2  implement  ok                      23   7   75190  191  patch_file 修 stats.py，返回 diff
+3  execute    ok                       1   0       0    0  pytest -> ok（不调模型）
+4  verify     ok                       0   1    1120    3  确定性检查（12 passed、tests/ 未改）AND 模型裁判
+5  report     ok                       0   1    1701    5  report.md + result.json
+
+== full-paper_attention_training  status=done
+#  node       status failure       tools llm  tokens    s  message
+0  plan       ok                       0   1    1872    5
+1  retrieve   ok                       4   4   17982   15  read_pdf 定位 Sec.5/6，八个字段全部带页码证据
+2  execute    fail   import_error      1   0       0    0  计划里附加的抽取脚本缺 pdfminer；分类器给出 kind + 定位
+3  repair     ok                       9   7   39052   39  改用标准库，重跑
+4  execute    ok                       2   0       0    1
+5  verify     ok                       0   1    6259   23
+6  report     ok                       0   1    1756    2
 ```
 
 ## 架构
@@ -80,16 +89,16 @@ reproagent resume <run_id>         # 从检查点恢复
 
 ## 评测
 
-17 个固定任务（`evals/tasks/`）、四类、全部确定性判定（不用模型打分）：
+22 个固定任务（`evals/tasks/`）、四类、全部确定性判定（不用模型打分）：
 
 | 类别 | 数 | 素材 | 判定 |
 |---|---|---|---|
 | paper_extraction | 4 | Attention / LoRA / ResNet / π₀.₅ 四篇 arXiv PDF | 字段与人工核对的标准答案容错比对 |
 | repo_locate | 4 | mini_mlp、textstats、pi05_snapshot（真实仓库快照） | 同上 |
-| repo_run | 3 | 训练小模型、CSV 统计、跑 CLI | 检查器在干净固件上**重算**标准答案再比对 |
-| bug_fix | 6 | textstats 注入 6 种 bug（YAML 里声明） | pytest 退出 0 **且** 测试文件哈希未变 |
+| repo_run | 7 | 训练小模型、CSV 统计、episode 列表统计、TF-IDF、跑 CLI | 检查器在干净固件上**重算**标准答案再比对 |
+| bug_fix | 7 | textstats 注入 6 种单点 bug + 1 个双 bug（YAML 里声明） | pytest 退出 0 **且** 测试文件哈希未变 |
 
-五组配置（`reproagent/evals/configs.py`）：`full`、`no_repair`（max_repairs=0）、`single_call`（一次调用、无工具、无状态机，材料直接塞 prompt）、`free_text_tools`（工具改自由文本协议，无 schema / status / next_hint）、`no_verify`（无模型裁判）。
+四组配置（`reproagent/evals/configs.py`）：`full`、`no_repair`（max_repairs=0）、`single_call`（一次调用、无工具、无状态机，材料直接塞 prompt）、`free_text_tools`（工具改自由文本协议，无 schema / status / next_hint）。
 
 ```bash
 reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3
