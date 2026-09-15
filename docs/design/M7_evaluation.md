@@ -70,6 +70,8 @@
 
 三句话结论：① single_call 只输在必须执行才能得到数字的任务，4 次"编数字"全是它；② 拿掉 REPAIR 掉 2 个任务，full 有 3 个任务靠修复救回，代价是 token 多 20%；③ 自由文本协议只少 1 个任务，但修复轮次 2.4×、p95 耗时 1.7×，还多出 no_progress/budget_exhausted/node_timeout 这些结构化协议下没有的失败。bug_fix 七个任务四种配置全过 → 注入的 bug 对这个模型偏简单，这是评测的已知短板。失败统计统一按"失败的节点步骤"计（`scripts/failure_stats.py`）：88 次运行共 34 个失败步骤，落在 20 次运行里。按类别 7 种：nonzero_exit 17（50%）、verify_mismatch 5（15%）、import_error 4（12%）、no_progress 4（12%）、budget_exhausted 2、node_timeout 1、file_not_found 1。按节点：execute 20（59%）、repair 6（18%）、verify 5（15%）、implement 3（9%）。full 配置自己只有 7 个失败步骤（3 次运行）：execute 5、repair 2；类别 import_error 4、nonzero_exit 3。
 
+**第二个模型 deepseek-v4-pro**（同一中转，只改模型名；`evals/results/final-deepseek-v4-pro/`，44 次）：full 95.5%（21/22，唯一失败是 episode 统计没填字段）、single_call 81.8%（18/22，输的还是那几个必须执行的 repo_run）；full 均 55.2k token、183s（pro 每次调用更慢）。其中 full 的 tfidf 任务第一次跑被中转站卡了 752s 零 token 返回（node_timeout），按基础设施故障重跑一次后通过，用 `scripts/rescore.py --override` 合并，两批原始记录都保留在 `evals/results/`。面试话术：两个模型下 single_call 都是 81.8%，说明"状态机的价值在执行反馈"这个结论不依赖模型。
+
 ## 6. 评测的诚实边界（面试主动说）
 
 - 17 个任务是小规模，成功率差 1 个任务就是 6 个百分点；结论看趋势，不看小数点。

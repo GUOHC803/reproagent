@@ -26,6 +26,8 @@ def main() -> None:
     ap.add_argument("dirs", nargs="+", type=Path)
     ap.add_argument("-o", "--out", type=Path, required=True)
     ap.add_argument("--tasks", type=Path, default=ROOT / "evals" / "tasks")
+    ap.add_argument("--override", action="store_true",
+                    help="later dirs replace earlier rows with the same (task, config, repeat) - for re-runs")
     args = ap.parse_args()
     tasks = {t["task_id"]: t for t in load_tasks(args.tasks)}
     rows, changed = [], 0
@@ -42,6 +44,13 @@ def main() -> None:
                     changed += 1
                     print(f"  {r['config']}/{r['task_id']}: {r.get('success')} -> {chk.passed}")
                 r["success"], r["check_details"], r["rescored_from"] = chk.passed, chk.details, str(d.name)
+            key = (r["task_id"], r["config"], r.get("repeat", 0))
+            if args.override:
+                old = next((i for i, x in enumerate(rows) if (x["task_id"], x["config"], x.get("repeat", 0)) == key), None)
+                if old is not None:
+                    print(f"  override {key} from {rows[old].get('rescored_from')} with {d.name}")
+                    rows[old] = r
+                    continue
             rows.append(r)
     args.out.mkdir(parents=True, exist_ok=True)
     with (args.out / "rows.jsonl").open("w", encoding="utf-8") as f:

@@ -101,6 +101,15 @@ Model `deepseek-v4.1-flash` (OpenAI-compatible relay via LiteLLM), 22 tasks x 4 
 - **Free-text tool protocol** is one task worse, with 2.4x the repair rounds, 1.7x the p95 latency, and failure kinds the structured protocol never produced (`no_progress` x4, `budget_exhausted` x2, `node_timeout`); its one failure is output-format drift (an integer field answered as a `{value, evidence}` object). **Schemas buy stability and cost.**
 - 88 runs produced 34 failed node steps (in 20 runs), concentrated in EXECUTE (20/34 = 59%); 7 failure kinds were observed, the largest being `nonzero_exit` at 17/34 = 50% (`scripts/failure_stats.py`).
 
+**Swapping the model** (one name in `.env`, no code change; `evals/results/final-deepseek-v4-pro/`):
+
+| model | full | single_call | full avg tokens | full avg time |
+|---|---|---|---|---|
+| deepseek-v4.1-flash | 100% (22/22) | 81.8% (18/22) | 61.8k | 95s |
+| deepseek-v4-pro | 95.5% (21/22) | 81.8% (18/22) | 55.2k | 183s |
+
+Under both models single_call lands at 81.8% and loses the same execution-required repo_run tasks; the gain from the state machine (+13.6 / +18.2 points) does not depend on the model.
+
 <!-- RESULTS:BEGIN -->
 来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）
 

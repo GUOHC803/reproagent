@@ -114,6 +114,15 @@ reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3
 - **自由文本工具协议**成功率低 1 个任务，修复轮次 2.4 倍、p95 耗时 1.7 倍，并且出现了结构化协议下从未出现的 `no_progress`×4、`budget_exhausted`×2、`node_timeout`；唯一的失败是输出格式漂移（把整数字段答成了 `{value, evidence}` 对象）。**schema 买到的是稳定性和成本。**
 - 88 次运行共 34 个失败步骤（涉及 20 次运行），集中在 EXECUTE 节点（20/34 = 59%）；失败类别 7 种，最大一类 `nonzero_exit` 17/34 = 50%（`scripts/failure_stats.py`）。
 
+**换模型**（只改 `.env` 里的一个模型名，代码零改动；`evals/results/final-deepseek-v4-pro/`）：
+
+| 模型 | full | single_call | full 均 token | full 均耗时 |
+|---|---|---|---|---|
+| deepseek-v4.1-flash | 100% (22/22) | 81.8% (18/22) | 61.8k | 95s |
+| deepseek-v4-pro | 95.5% (21/22) | 81.8% (18/22) | 55.2k | 183s |
+
+两个模型下 single_call 都是 81.8%，输的都是 repo_run 里必须执行才能得到数字的那几个任务；状态机带来的提升（+13.6 / +18.2 个百分点）与模型无关。
+
 <!-- RESULTS:BEGIN -->
 来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）
 

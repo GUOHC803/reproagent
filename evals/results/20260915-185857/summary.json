@@ -1,0 +1,45 @@
+{
+  "configs": {
+    "full": {
+      "n": 1,
+      "success_rate": 1.0,
+      "by_category": {
+        "repo_run": {
+          "n": 1,
+          "success_rate": 1.0
+        }
+      },
+      "avg_repairs": 1,
+      "avg_tool_calls": 16,
+      "avg_tool_calls_failed": 2,
+      "avg_llm_calls": 11,
+      "avg_tokens": 54676,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 637.2,
+      "p95_wall_time_s": 637.2,
+      "p95_tokens": 54676,
+      "success_after_repair": 1,
+      "success_first_try": 0,
+      "claimed_but_wrong": 0,
+      "failure_kinds": {},
+      "failures_seen": {
+        "runtime_error": 1
+      }
+    }
+  },
+  "categories": [
+    "repo_run"
+  ],
+  "n_rows": 1,
+  "meta": {
+    "model": "openai/deepseek-v4-pro",
+    "configs": [
+      "full"
+    ],
+    "tasks": [
+      "run_textstats_tfidf"
+    ],
+    "repeats": 1,
+    "timestamp": "20260915-185857"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "configs": {
+    "full": {
+      "n": 22,
+      "success_rate": 0.9545454545454546,
+      "by_category": {
+        "bug_fix": {
+          "n": 7,
+          "success_rate": 1.0
+        },
+        "paper_extraction": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_locate": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 7,
+          "success_rate": 0.8571428571428571
+        }
+      },
+      "avg_repairs": 0.2727272727272727,
+      "avg_tool_calls": 15.181818181818182,
+      "avg_tool_calls_failed": 0.6818181818181818,
+      "avg_llm_calls": 11.954545454545455,
+      "avg_tokens": 55195.40909090909,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 182.77272727272728,
+      "p95_wall_time_s": 550.7,
+      "p95_tokens": 105147,
+      "success_after_repair": 4,
+      "success_first_try": 17,
+      "claimed_but_wrong": 1,
+      "failure_kinds": {},
+      "failures_seen": {
+        "verify_mismatch": 2,
+        "no_progress": 1,
+        "nonzero_exit": 1,
+        "runtime_error": 1
+      }
+    },
+    "single_call": {
+      "n": 22,
+      "success_rate": 0.8181818181818182,
+      "by_category": {
+        "bug_fix": {
+          "n": 7,
+          "success_rate": 1.0
+        },
+        "paper_extraction": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_locate": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 7,
+          "success_rate": 0.42857142857142855
+        }
+      },
+      "avg_repairs": 0,
+      "avg_tool_calls": 1.3181818181818181,
+      "avg_tool_calls_failed": 0,
+      "avg_llm_calls": 1,
+      "avg_tokens": 11526.727272727272,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 108.56363636363636,
+      "p95_wall_time_s": 597.1,
+      "p95_tokens": 21273,
+      "success_after_repair": 0,
+      "success_first_try": 18,
+      "claimed_but_wrong": 3,
+      "failure_kinds": {
+        "missing_artifact": 1
+      },
+      "failures_seen": {
+        "missing_artifact": 1
+      }
+    }
+  },
+  "categories": [
+    "bug_fix",
+    "paper_extraction",
+    "repo_locate",
+    "repo_run"
+  ],
+  "n_rows": 44,
+  "meta": {
+    "model": "openai/deepseek-v4-pro",
+    "configs": [
+      "full",
+      "single_call"
+    ],
+    "tasks": [
+      "bugfix_nameerror_freq",
+      "bugfix_ngram_offbyone",
+      "bugfix_syntax_error",
+      "bugfix_tfidf_sign",
+      "bugfix_tokenize_none",
+      "bugfix_topk_order",
+      "bugfix_two_bugs",
+      "locate_mini_mlp",
+      "locate_pi05_code",
+      "locate_pi05_readme",
+      "locate_textstats",
+      "paper_attention_training",
+      "paper_lora_setup",
+      "paper_pi05_overview",
+      "paper_resnet_training",
+      "run_mini_mlp",
+      "run_mini_mlp_seed7",
+      "run_pi05_episode_gaps",
+      "run_pi05_loss_mean",
+      "run_pi05_loss_min",
+      "run_textstats_cli",
+      "run_textstats_tfidf"
+    ],
+    "repeats": 1,
+    "timestamp": "20260915-190951",
+    "merged_from": [
+      "20260915-182054",
+      "20260915-185857"
+    ]
+  }
+}
