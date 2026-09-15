@@ -18,7 +18,7 @@ check:
   - type: fields
     expected:
       default_stopwords_count: 10
-      idf_formula: ["log(N / df)", "log(N/df)"]
+      idf_formula: {any: ["log(N / df)", "log(N/df)"]}
       ngrams_file: "stats.py"
       tfidf_smoothing: false
       cli_module: "textstats.cli"

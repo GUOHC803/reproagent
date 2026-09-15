@@ -1,0 +1,36 @@
+task_id: run_textstats_tfidf
+category: repo_run
+source_dir: ../fixtures/textstats
+goal: >
+  Using the textstats library in this repository, compute TF-IDF for these three documents (tokenize each with
+  textstats.tokenize, do NOT remove stopwords):
+  doc1 = "the cat sat on the mat", doc2 = "the dog sat on the log", doc3 = "cats and dogs and mats".
+  Write the full result to tfidf.json in the repository root as a list of three {term: score} objects (same order),
+  and report the term with the highest TF-IDF score in doc2 and that score (6 significant digits).
+inputs:
+  repo: "."
+  fields:
+    top_term_doc2: term with the highest TF-IDF in doc2 (string)
+    top_score_doc2: its score (float)
+success_criteria: tfidf.json exists and matches the library's own output for the three documents.
+expected_outputs: [tfidf.json]
+check:
+  - type: reference_script
+    file: tfidf.json
+    script: |
+      import json, sys
+      sys.path.insert(0, ".")
+      from textstats import tokenize, tfidf
+      docs = [tokenize(d) for d in ["the cat sat on the mat", "the dog sat on the log", "cats and dogs and mats"]]
+      print(json.dumps(tfidf(docs)))
+    tolerance: 1.0e-6
+  - type: fields_from_script
+    script: |
+      import json, sys
+      sys.path.insert(0, ".")
+      from textstats import tokenize, tfidf
+      docs = [tokenize(d) for d in ["the cat sat on the mat", "the dog sat on the log", "cats and dogs and mats"]]
+      d2 = tfidf(docs)[1]
+      k = max(d2, key=d2.get)
+      print(json.dumps({"top_term_doc2": k, "top_score_doc2": d2[k]}))
+    tolerance: 1.0e-4

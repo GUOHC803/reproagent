@@ -56,12 +56,15 @@ def match_value(expected: Any, actual: Any, tol: float = 1e-2) -> bool:
     """Tolerant comparison used by the ``fields`` check.
 
     * list expected -> every element must be found in the actual value (as text)
+    * {"any": [...]} expected -> at least one alternative must match
     * bool expected -> actual must be the same boolean (or 'true'/'false' text)
     * numeric expected -> actual parsed as number, relative tolerance ``tol``
     * string expected -> normalized substring match either way
     """
     if actual is None:
         return False
+    if isinstance(expected, dict) and "any" in expected:
+        return any(match_value(alt, actual, tol) for alt in expected["any"])
     if isinstance(expected, list):
         a_text = _norm(json.dumps(actual, ensure_ascii=False) if not isinstance(actual, str) else actual)
         return all(_norm(e) in a_text for e in expected)

@@ -17,6 +17,7 @@ def test_match_value():
     assert match_value("GLUE", "the GLUE benchmark")
     assert match_value("35MB", "35 MB") and not match_value("35MB", "350GB")
     assert match_value(["pre-training", "post-training"], ["Pre-training", "Post-training"])
+    assert match_value({"any": ["discrete token", "tokeniz"]}, "discrete tokens") and not match_value({"any": ["a", "b"]}, "zzz")
     assert match_value(False, "false") and match_value(False, False) and not match_value(False, True)
     assert not match_value(28.4, None)
 
@@ -35,8 +36,10 @@ def test_tasks_load_and_injections_apply():
         assert t["_fixture"].is_dir(), t["task_id"]
         if t.get("inject"):
             src = prepare_source(t)
-            text = (src / t["inject"]["file"]).read_text()
-            assert t["inject"]["new"] in text and t["inject"]["old"] not in text
+            injs = t["inject"] if isinstance(t["inject"], list) else [t["inject"]]
+            for inj in injs:
+                text = (src / inj["file"]).read_text()
+                assert inj["new"] in text and inj["old"] not in text
 
 
 def test_tests_pass_checker_on_fixture(tmp_path):

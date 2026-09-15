@@ -1,0 +1,22 @@
+task_id: bugfix_two_bugs
+category: bug_fix
+source_dir: ../fixtures/textstats
+goal: >
+  The textstats test suite fails. Find the bug(s) and fix the implementation so that `python -m pytest -q` passes.
+  Do not modify the tests.
+inputs:
+  repo: "."
+  command: "python -m pytest -q --no-header -p no:cacheprovider"
+success_criteria: pytest exits 0 with all 12 tests passing; no file under tests/ is modified.
+inject:
+  - file: textstats/stats.py
+    old: "range(len(tokens) - n + 1)"
+    new: "range(len(tokens) - n)"
+  - file: textstats/tokenize.py
+    old: "    if stopwords is None:\n        stopwords = DEFAULT_STOPWORDS\n"
+    new: "    if stopwords is None:\n        stopwords = set()\n"
+bug_note: two independent bugs (ngram off-by-one; normalize() no longer applies the default stopwords) - a single-site fix leaves the suite red
+check:
+  - type: tests_pass
+    command: "python -m pytest -q --no-header -p no:cacheprovider"
+    protected: [tests, conftest.py]

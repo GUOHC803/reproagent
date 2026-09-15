@@ -19,6 +19,6 @@ check:
     expected:
       num_training_stages: 2
       stage_names: ["pre-training", "post-training"]
-      pretraining_action_representation: ["discrete token", "tokeniz"]
+      pretraining_action_representation: {any: ["discrete token", "tokeniz"]}
       posttraining_action_method: "flow matching"
       action_expert_params: "300M"

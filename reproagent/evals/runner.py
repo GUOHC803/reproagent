@@ -42,12 +42,12 @@ def prepare_source(task: dict[str, Any]) -> Path:
     dst = tmp / "src"
     shutil.copytree(fixture, dst, ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache", "*.pyc"))
     inj = task.get("inject")
-    if inj:
-        f = dst / inj["file"]
+    for one in (inj if isinstance(inj, list) else [inj]) if inj else []:
+        f = dst / one["file"]
         text = f.read_text(encoding="utf-8")
-        if inj["old"] not in text:
-            raise RuntimeError(f"{task['task_id']}: injection anchor not found in {inj['file']}")
-        f.write_text(text.replace(inj["old"], inj["new"], 1), encoding="utf-8")
+        if one["old"] not in text:
+            raise RuntimeError(f"{task['task_id']}: injection anchor not found in {one['file']}")
+        f.write_text(text.replace(one["old"], one["new"], 1), encoding="utf-8")
     return dst
 
 

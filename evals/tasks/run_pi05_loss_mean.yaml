@@ -1,0 +1,37 @@
+task_id: run_pi05_loss_mean
+category: repo_run
+source_dir: ../fixtures/pi05_snapshot
+goal: >
+  results/loss_curves.csv holds training-loss curves for several runs (columns run, step, loss). For every run,
+  compute the mean loss over the rows with step >= 2000 and the number of such rows, and write them to
+  stats.json in the repository root as {"<run name>": {"mean_loss": float, "n": int}}. Report the run with the
+  lowest mean and its value (6 significant digits).
+inputs:
+  repo: "."
+  fields:
+    best_run: name of the run with the lowest mean loss over step >= 2000 (string)
+    best_mean_loss: that mean loss (float)
+success_criteria: stats.json exists with one entry per run and values that match the CSV exactly.
+expected_outputs: [stats.json]
+check:
+  - type: reference_script
+    file: stats.json
+    script: |
+      import csv, json
+      acc = {}
+      for r in csv.DictReader(open("results/loss_curves.csv")):
+          if int(r["step"]) >= 2000:
+              a = acc.setdefault(r["run"], [0.0, 0]); a[0] += float(r["loss"]); a[1] += 1
+      print(json.dumps({k: {"mean_loss": s / n, "n": n} for k, (s, n) in acc.items()}))
+    tolerance: 1.0e-6
+  - type: fields_from_script
+    script: |
+      import csv, json
+      acc = {}
+      for r in csv.DictReader(open("results/loss_curves.csv")):
+          if int(r["step"]) >= 2000:
+              a = acc.setdefault(r["run"], [0.0, 0]); a[0] += float(r["loss"]); a[1] += 1
+      means = {k: s / n for k, (s, n) in acc.items()}
+      k = min(means, key=means.get)
+      print(json.dumps({"best_run": k, "best_mean_loss": means[k]}))
+    tolerance: 1.0e-4
