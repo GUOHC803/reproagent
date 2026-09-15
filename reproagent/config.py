@@ -23,8 +23,8 @@ class Budget(BaseModel):
 
     max_steps: int = Field(40, description="Max node executions per run (incl. repairs).")
     max_repairs: int = Field(3, description="Max REPAIR rounds. 0 disables the repair node.")
-    max_tool_calls: int = Field(60, description="Max tool invocations per run.")
-    max_tool_calls_per_node: int = Field(12, description="Max tool invocations inside one node.")
+    max_tool_calls: int = Field(80, description="Max tool invocations per run.")
+    max_tool_calls_per_node: int = Field(20, description="Max tool invocations inside one node.")
     max_llm_calls: int = Field(60, description="Max model calls per run.")
     node_timeout_s: float = Field(600.0, description="Wall-clock timeout for one node.")
     tool_timeout_s: float = Field(120.0, description="Default timeout for a sandboxed command.")

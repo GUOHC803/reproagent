@@ -159,7 +159,7 @@ def retrieve_node(state: TaskState, rt: NodeRuntime) -> NodeResult:
         plan_summary=state.summaries.plan, goal=t.goal, criteria=t.success_criteria or "(none)", inputs=_inputs(state),
         fields=_fields(state),
     )
-    allowed = [n for n in ("read_pdf", "inspect_repo") if n in rt.tools.names()]
+    allowed = [n for n in ("read_pdf", "inspect_repo", "run_tests") if n in rt.tools.names()]
     outcome = rt.tool_loop(system=P.SYSTEM_BASE, user=user, allowed_tools=allowed, final_schema=Findings)
     if outcome.final is None:
         return _apply_loop_failure(rt, outcome, "retrieve did not finish")

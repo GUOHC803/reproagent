@@ -10,12 +10,21 @@
 
 from __future__ import annotations
 
+import os
+
+from dotenv import find_dotenv, load_dotenv
+
 from ..config import AgentConfig, Budget
 
-_BASE = AgentConfig()
+
+def _base() -> AgentConfig:
+    """Default config; the model comes from REPROAGENT_MODEL (.env) so ablations share one model."""
+    load_dotenv(find_dotenv(usecwd=True) or None)
+    return AgentConfig(model=os.environ.get("REPROAGENT_MODEL", "deepseek/deepseek-chat"))
 
 
 def get_config(name: str) -> AgentConfig:
+    _BASE = _base()  # noqa: N806
     if name == "full":
         return _BASE.with_updates(name="full")
     if name == "no_repair":

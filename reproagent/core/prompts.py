@@ -39,7 +39,7 @@ Success criteria: {criteria}
 Inputs: {inputs}
 Fields to fill (if any): {fields}
 
-Use read_pdf / inspect_repo. Quote evidence for every fact (page or file:line). When you have what you need, call `finish` with:
+Use read_pdf / inspect_repo (and run_tests to reproduce a failing suite). Be economical: you have a limited tool budget, so do not read every file - for a bug-fix task run the tests first and then read only the files named in the traceback; for a paper, jump to the relevant section or grep for the terms you need. Quote evidence for every fact (page or file:line). When you have what you need, call `finish` with:
 - summary: 2-4 sentences,
 - key_facts: dict of the facts you found,
 - extracted: dict with EXACTLY the requested fields (values as they appear in the source; numbers as numbers),

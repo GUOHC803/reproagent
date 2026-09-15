@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from .config import AgentConfig, Settings, load_settings
 from .core.orchestrator import Orchestrator
@@ -56,7 +56,7 @@ def run_task(
     log: Callable[[str], None] | None = None,
     confirm_callback=None,
 ) -> RunHandle:
-    load_dotenv()
+    load_dotenv(find_dotenv(usecwd=True) or None)
     cfg = cfg or AgentConfig()
     settings = settings or load_settings()
     data_dir = Path(settings.data_dir)
@@ -87,7 +87,7 @@ def run_task(
 
 def resume_run(run_id: str, *, settings: Settings | None = None, llm: LLMClient | None = None,
                log: Callable[[str], None] | None = None) -> RunHandle:
-    load_dotenv()
+    load_dotenv(find_dotenv(usecwd=True) or None)
     settings = settings or load_settings()
     store = TraceStore(settings.resolved_db_path, record_messages=settings.record_llm)
     run = store.get_run(run_id)

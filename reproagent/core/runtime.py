@@ -163,6 +163,16 @@ class NodeRuntime:
         idle_turns = 0
         while True:
             if n_calls >= max_calls:
+                # Last chance: no more tools, only `finish` with whatever has been learned.
+                messages.append({"role": "user", "content": f"Tool budget ({max_calls} calls) exhausted. "
+                                 "Call `finish` now with your best answer from what you have seen."})
+                resp = self.chat(self.ctx.maybe_compact(messages), tools=[finish_schema])
+                for tc in resp.tool_calls:
+                    if tc.name == "finish":
+                        try:
+                            return LoopOutcome(final_schema.model_validate(tc.arguments), messages, n_calls, tool_results=results)
+                        except ValidationError:
+                            break
                 return LoopOutcome(None, messages, n_calls, FailureKind.BUDGET_EXHAUSTED,
                                    f"node tool budget ({max_calls}) exhausted", results)
             messages = self.ctx.maybe_compact(messages)
