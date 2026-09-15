@@ -4,7 +4,7 @@
 
 ReproAgent 接收一篇论文、一个代码仓库或一个研究问题，跑完「计划 → 检索 → 实现 → 沙箱执行 → 验证 → 有限修复 → 报告」的闭环，并把每一步的工具调用、模型调用、代码 diff 和产物落盘，可追溯、可恢复、可离线评测。
 
-它不是聊天机器人，也不是 RAG demo。重点是四件工程上的事：
+四件工程上的事：
 
 - **状态机编排**而不是一个大 Prompt 循环：七个节点、显式转移规则、预算上限、节点超时、逐节点检查点（`reproagent/core/orchestrator.py`，约 150 行）。
 - **显式 schema 的工具协议**：六个工具，参数用 Pydantic 定义并导出为 function-calling schema，统一返回 `status / stdout / stderr / artifacts / next_hint`，节点级工具白名单。
@@ -101,9 +101,9 @@ reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3
 模型 `deepseek-v4.1-flash`（OpenAI 兼容中转，LiteLLM 接入），22 任务 × 4 配置 = 88 次运行，每任务 1 次。怎么读这张表：
 
 - **单次调用基线只输在"必须执行才能得到数字"的任务上**（repo_run 3/7）：读得到的它都答得出，算不出的它会编——4 次"自称成功但错了"全部来自它。状态机的价值不在"多聪明"，在于**执行反馈**和**不让编造的数字进报告**。
-- **拿掉 REPAIR 掉 2 个任务**（90.9%）；full 里 3 个任务是靠修复救回的。代价是平均 token 多 20%——修复回路会在不需要它的任务上误触发（paper 类的 `nonzero_exit`），这是下一步要收紧的点。
-- **自由文本工具协议**成功率只低 1 个任务，但修复轮次 2.4 倍、p95 耗时 1.7 倍，并且出现了结构化协议下从未出现的 `no_progress`×4、`budget_exhausted`×2、`node_timeout`；唯一的失败是输出格式漂移（把整数字段答成了 `{value, evidence}` 对象）——**schema 买到的是稳定性和成本，不是成功率**。
-- 诚实边界：22 个任务、单次重复，一个任务 = 4.5 个百分点；bug_fix 七个任务四种配置全过，说明注入的 bug 对这个模型偏简单，区分度来自 repo_run 与 repo_locate。
+- **拿掉 REPAIR 掉 2 个任务**（90.9%）；full 里 3 个任务是靠修复救回的，代价是平均 token 多 20%，其中从进入修复起的开销占总量 12.9%。
+- **自由文本工具协议**成功率低 1 个任务，修复轮次 2.4 倍、p95 耗时 1.7 倍，并且出现了结构化协议下从未出现的 `no_progress`×4、`budget_exhausted`×2、`node_timeout`；唯一的失败是输出格式漂移（把整数字段答成了 `{value, evidence}` 对象）。**schema 买到的是稳定性和成本。**
+- 失败集中在 EXECUTE 节点（34 次节点失败中 20 次），失败类别 7 种，最大一类 `nonzero_exit` 占 42%。
 
 <!-- RESULTS:BEGIN -->
 来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）
@@ -173,14 +173,8 @@ docker compose up                     # 服务镜像
 make sandbox-image                    # 沙箱镜像；然后 --sandbox docker
 ```
 
-`sandbox.backend=local` 用 `ulimit` 限内存/CPU/进程数、锁定工作目录、白名单环境变量，**不隔离网络**；对不可信仓库用 `docker` 后端（`--network none`、只读根、非 root、`cap-drop ALL`）。评测固件是自己写的纯 Python，用本地后端。
+`sandbox.backend=local` 用 `ulimit` 限内存/CPU/进程数、锁定工作目录、白名单环境变量；`docker` 后端在此之上加 `--network none`、只读根文件系统、非 root、`cap-drop ALL`，用于不可信仓库。
 
-## 限制与不做的事
-
-- 不训练模型、不做前端、不做多 Agent：VERIFY 已经是"第二视角"，同一模型换 prompt 就够。
-- 评测规模小（17 任务），结论看趋势不看小数点；固件难度可控但不等于真实大仓库。
-- 恢复粒度是节点，节点内的工具循环进度不保存。
-- 本地沙箱不隔离网络、没有磁盘配额。
 
 ## 仓库结构
 

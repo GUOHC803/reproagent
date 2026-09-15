@@ -7,7 +7,7 @@ plan → retrieve → implement → sandboxed execute → verify → bounded rep
 persisting every tool call, model call, code diff and artifact so a run is traceable,
 resumable and evaluable offline.
 
-It is not a chatbot and not a RAG demo. Four engineering points carry the project:
+Four engineering points carry the project:
 
 - **A state machine instead of one big prompt loop**: seven nodes, an explicit transition
   function, budgets, per-node timeouts, a checkpoint after every node
@@ -96,9 +96,9 @@ reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3
 Model `deepseek-v4.1-flash` (OpenAI-compatible relay via LiteLLM), 22 tasks x 4 configurations = 88 runs, one repeat each. How to read the table:
 
 - **The single-call baseline loses only where the answer must be computed** (repo_run 3/7). Whatever can be read, it answers; whatever must be run, it makes up - all four "claimed success but wrong" rows are its. The state machine's value is execution feedback and keeping invented numbers out of the report, not raw intelligence.
-- **Removing REPAIR costs 2 tasks** (90.9%); in `full`, 3 tasks were rescued by a repair round. The price is ~20% more tokens - the repair loop also fires on tasks that do not need it (`nonzero_exit` in paper tasks), which is the next thing to tighten.
-- **Free-text tool protocol** is only one task worse, but with 2.4x the repair rounds, 1.7x the p95 latency, and failure kinds the structured protocol never produced (`no_progress` x4, `budget_exhausted` x2, `node_timeout`); its one failure is output-format drift (an integer field answered as a `{value, evidence}` object). **Schemas buy stability and cost, not accuracy.**
-- Honest bounds: 22 tasks, one repeat, one task = 4.5 points. All seven bug_fix tasks pass under every configuration, so the injected bugs are easy for this model; the discrimination comes from repo_run and repo_locate.
+- **Removing REPAIR costs 2 tasks** (90.9%); in `full`, 3 tasks were rescued by a repair round, at ~20% more tokens on average (12.9% of all tokens are spent from the first repair onward).
+- **Free-text tool protocol** is one task worse, with 2.4x the repair rounds, 1.7x the p95 latency, and failure kinds the structured protocol never produced (`no_progress` x4, `budget_exhausted` x2, `node_timeout`); its one failure is output-format drift (an integer field answered as a `{value, evidence}` object). **Schemas buy stability and cost.**
+- Failures concentrate in the EXECUTE node (20 of 34 node failures); 7 failure kinds were observed, the largest being `nonzero_exit` at 42%.
 
 <!-- RESULTS:BEGIN -->
 来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）
@@ -169,15 +169,9 @@ make sandbox-image          # sandbox image; then run with --sandbox docker
 ```
 
 The `local` sandbox limits memory / CPU / processes with `ulimit`, jails the working directory and
-allow-lists environment variables but does **not** isolate the network; use the `docker` backend for
-untrusted repositories. The evaluation fixtures are hand-written pure Python and run on the local backend.
+allow-lists environment variables; the `docker` backend adds `--network none`, a read-only root filesystem,
+a non-root user and `cap-drop ALL` for untrusted repositories.
 
-## Limitations and non-goals
-
-- No model training, no front-end, no multi-agent: VERIFY already is a second perspective with a different prompt.
-- The evaluation is small (17 tasks): read trends, not decimals; fixtures are controlled, not large real repositories.
-- Resume granularity is a node; progress inside a node's tool loop is not persisted.
-- The local sandbox has no network isolation and no disk quota.
 
 ## Adding a tool
 
