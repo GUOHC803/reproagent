@@ -21,12 +21,12 @@ Four engineering points carry the project:
   failure kinds; a REPAIR node conditioned on the kind with a configurable cap; 22 fixed tasks,
   deterministic checkers, four ablation arms.
 
-The project grew out of reproducing π₀.₅
-([pi05-libero-reproduction](https://github.com/GUOHC803/pi05-libero-reproduction)). Most of the time in
-reproducing a paper's code goes not into the algorithm but into finding the entry point, matching the config,
-filling in dependencies and reading errors - and every step only tells you whether it worked after you run it.
-ReproAgent hands that loop to an agent while keeping it bounded, verifiable and traceable. The `pi05_snapshot`
-fixture in the evaluation set is a snapshot of that repository.
+The project came out of reproducing π₀.₅
+([pi05-libero-reproduction](https://github.com/GUOHC803/pi05-libero-reproduction)). What actually took time
+was not the model but getting the repository to run: where the entry point was, whether the config matched
+the paper, which dependencies were missing - most of it you only find out by running it and reading the error.
+ReproAgent lets an agent do that work and keeps a record of every step, so when something goes wrong you can
+see which step and why. The `pi05_snapshot` fixture in the evaluation set is a snapshot of that repository.
 
 ## Quick start
 
