@@ -57,6 +57,19 @@
 - P95 延迟：从 `rows.jsonl` 的 `wall_time_s` 取分位数（`summary.md` 给的是均值，P95 要自己算，评测脚本里加一行就行）。
 - 上界可以**先验**给出：`max_llm_calls × 单次上限 + max_tool_calls × tool_timeout` —— 这就是预算存在的另一个理由。
 
+## 5b. 最终数字（2026-09-15，`evals/results/final/`，必须背下来）
+
+模型 deepseek-v4.1-flash，22 任务 × 4 配置 = 88 次运行，每任务 1 次。
+
+| 配置 | 成功率 | repo_run | repo_locate | 均修复轮次 | 均 token | 均耗时 | p95 耗时 | 自称成功但错 |
+|---|---|---|---|---|---|---|---|---|
+| full | **100%** (22/22) | 7/7 | 4/4 | 0.23 | 61.8k | 95s | 235s | 0 |
+| free_text_tools | 95.5% (21/22) | 7/7 | 3/4 | 0.55 | 61.9k | 151s | 394s | 1 |
+| no_repair | 90.9% (20/22) | 6/7 | 3/4 | 0 | 51.2k | 75s | 234s | 1 |
+| single_call | 81.8% (18/22) | 3/7 | 4/4 | 0 | 11.2k | 15s | 31s | 4 |
+
+三句话结论：① single_call 只输在必须执行才能得到数字的任务，4 次"编数字"全是它；② 拿掉 REPAIR 掉 2 个任务，full 有 3 个任务靠修复救回，代价是 token 多 20%；③ 自由文本协议只少 1 个任务，但修复轮次 2.4×、p95 耗时 1.7×，还多出 no_progress/budget_exhausted/node_timeout 这些结构化协议下没有的失败。bug_fix 七个任务四种配置全过 → 注入的 bug 对这个模型偏简单，这是评测的已知短板。遇到的失败类别共 7 种（import_error、nonzero_exit、verify_mismatch、no_progress、budget_exhausted、node_timeout、file_not_found）。
+
 ## 6. 评测的诚实边界（面试主动说）
 
 - 17 个任务是小规模，成功率差 1 个任务就是 6 个百分点；结论看趋势，不看小数点。
