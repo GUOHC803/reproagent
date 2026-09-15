@@ -20,7 +20,7 @@ def latest_results() -> Path:
 
 
 def main() -> None:
-    res = Path(sys.argv[1]) if len(sys.argv) > 1 else latest_results()
+    res = (Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else latest_results()).resolve()
     body = (res / "summary.md").read_text(encoding="utf-8")
     body = re.sub(r"^# .*\n", "", body, count=1).strip()
     body = re.sub(r"^## ", "#### ", body, flags=re.MULTILINE)

@@ -98,8 +98,71 @@ reproagent eval --configs full,no_repair,single_call,free_text_tools --workers 3
 
 ### 结果
 
+模型 `deepseek-v4.1-flash`（OpenAI 兼容中转，LiteLLM 接入），22 任务 × 4 配置 = 88 次运行，每任务 1 次。怎么读这张表：
+
+- **单次调用基线只输在"必须执行才能得到数字"的任务上**（repo_run 3/7）：读得到的它都答得出，算不出的它会编——4 次"自称成功但错了"全部来自它。状态机的价值不在"多聪明"，在于**执行反馈**和**不让编造的数字进报告**。
+- **拿掉 REPAIR 掉 2 个任务**（90.9%）；full 里 3 个任务是靠修复救回的。代价是平均 token 多 20%——修复回路会在不需要它的任务上误触发（paper 类的 `nonzero_exit`），这是下一步要收紧的点。
+- **自由文本工具协议**成功率只低 1 个任务，但修复轮次 2.4 倍、p95 耗时 1.7 倍，并且出现了结构化协议下从未出现的 `no_progress`×4、`budget_exhausted`×2、`node_timeout`；唯一的失败是输出格式漂移（把整数字段答成了 `{value, evidence}` 对象）——**schema 买到的是稳定性和成本，不是成功率**。
+- 诚实边界：22 个任务、单次重复，一个任务 = 4.5 个百分点；bug_fix 七个任务四种配置全过，说明注入的 bug 对这个模型偏简单，区分度来自 repo_run 与 repo_locate。
+
 <!-- RESULTS:BEGIN -->
-评测尚未批跑（本节由 `evals/results/<最新>/summary.md` 生成）。
+来源 / source: `evals/results/final/summary.md`（rows.jsonl 里有每次运行的明细）
+
+model: `openai/deepseek-v4.1-flash` | tasks: 22 | repeats: 1 | rows: 88
+
+#### Success rate by configuration
+
+| config | n | success | bug_fix | paper_extraction | repo_locate | repo_run | avg repairs | avg tool calls | avg model calls | avg tokens | p95 tokens | avg s | p95 s |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| full | 22 | **100.0%** | 100% (7) | 100% (4) | 100% (4) | 100% (7) | 0.23 | 18.4 | 11.8 | 61808 | 117987 | 95 | 235 |
+| no_repair | 22 | **90.9%** | 100% (7) | 100% (4) | 75% (4) | 86% (7) | 0.00 | 16.5 | 10.0 | 51237 | 116696 | 75 | 234 |
+| single_call | 22 | **81.8%** | 100% (7) | 100% (4) | 100% (4) | 43% (7) | 0.00 | 2.0 | 1.0 | 11217 | 19838 | 15 | 31 |
+| free_text_tools | 22 | **95.5%** | 100% (7) | 100% (4) | 75% (4) | 100% (7) | 0.55 | 14.1 | 17.1 | 61891 | 201636 | 151 | 394 |
+
+#### Repair and verification
+
+| config | solved first try | solved after repair | claimed success but wrong |
+|---|---|---|---|
+| full | 19 | 3 | 0 |
+| no_repair | 20 | 0 | 1 |
+| single_call | 18 | 0 | 4 |
+| free_text_tools | 14 | 7 | 1 |
+
+#### Failure kinds (final, unsuccessful runs)
+
+- **full** - final: none; encountered during runs (incl. repaired): import_error: 2, nonzero_exit: 2
+- **no_repair** - final: verify_mismatch: 1; encountered during runs (incl. repaired): nonzero_exit: 5, verify_mismatch: 2
+- **single_call** - final: none; encountered during runs (incl. repaired): none
+- **free_text_tools** - final: none; encountered during runs (incl. repaired): no_progress: 4, nonzero_exit: 4, verify_mismatch: 3, budget_exhausted: 2, node_timeout: 1, file_not_found: 1
+
+#### Per-task results
+
+| task | category | full | no_repair | single_call | free_text_tools |
+|---|---|---|---|---|---|
+| bugfix_nameerror_freq | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| bugfix_ngram_offbyone | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| bugfix_syntax_error | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 1) |
+| bugfix_tfidf_sign | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| bugfix_tokenize_none | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| bugfix_topk_order | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| bugfix_two_bugs | bug_fix | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| paper_attention_training | paper_extraction | ✅ 1/1 (rep 1) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| paper_lora_setup | paper_extraction | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 3) |
+| paper_pi05_overview | paper_extraction | ✅ 1/1 (rep 3) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 1) |
+| paper_resnet_training | paper_extraction | ✅ 1/1 (rep 1) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 1) |
+| locate_mini_mlp | repo_locate | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| locate_pi05_code | repo_locate | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| locate_pi05_readme | repo_locate | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 3) |
+| locate_textstats | repo_locate | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 1) |
+| run_mini_mlp | repo_run | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 0) | ✅ 1/1 (rep 1) |
+| run_mini_mlp_seed7 | repo_run | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 0) | ✅ 1/1 (rep 0) |
+| run_pi05_episode_gaps | repo_run | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| run_pi05_loss_mean | repo_run | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 0) | ✅ 1/1 (rep 1) |
+| run_pi05_loss_min | repo_run | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ❌ 0/1 (rep 0) | ✅ 1/1 (rep 0) |
+| run_textstats_cli | repo_run | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+| run_textstats_tfidf | repo_run | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) | ✅ 1/1 (rep 0) |
+
+Legend: ✅ all repeats passed, ⚠️ some, ❌ none; `rep` = repair rounds per repeat.
 <!-- RESULTS:END -->
 
 ## 部署

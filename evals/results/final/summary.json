@@ -1,0 +1,209 @@
+{
+  "configs": {
+    "full": {
+      "n": 22,
+      "success_rate": 1.0,
+      "by_category": {
+        "bug_fix": {
+          "n": 7,
+          "success_rate": 1.0
+        },
+        "paper_extraction": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_locate": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 7,
+          "success_rate": 1.0
+        }
+      },
+      "avg_repairs": 0.22727272727272727,
+      "avg_tool_calls": 18.40909090909091,
+      "avg_tool_calls_failed": 1.0454545454545454,
+      "avg_llm_calls": 11.818181818181818,
+      "avg_tokens": 61808.36363636364,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 94.58181818181818,
+      "p95_wall_time_s": 234.8,
+      "p95_tokens": 117987,
+      "success_after_repair": 3,
+      "success_first_try": 19,
+      "claimed_but_wrong": 0,
+      "failure_kinds": {},
+      "failures_seen": {
+        "import_error": 2,
+        "nonzero_exit": 2
+      }
+    },
+    "no_repair": {
+      "n": 22,
+      "success_rate": 0.9090909090909091,
+      "by_category": {
+        "bug_fix": {
+          "n": 7,
+          "success_rate": 1.0
+        },
+        "paper_extraction": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_locate": {
+          "n": 4,
+          "success_rate": 0.75
+        },
+        "repo_run": {
+          "n": 7,
+          "success_rate": 0.8571428571428571
+        }
+      },
+      "avg_repairs": 0,
+      "avg_tool_calls": 16.454545454545453,
+      "avg_tool_calls_failed": 0.8181818181818182,
+      "avg_llm_calls": 10.045454545454545,
+      "avg_tokens": 51237.40909090909,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 75.00454545454545,
+      "p95_wall_time_s": 233.5,
+      "p95_tokens": 116696,
+      "success_after_repair": 0,
+      "success_first_try": 20,
+      "claimed_but_wrong": 1,
+      "failure_kinds": {
+        "verify_mismatch": 1
+      },
+      "failures_seen": {
+        "verify_mismatch": 2,
+        "nonzero_exit": 5
+      }
+    },
+    "single_call": {
+      "n": 22,
+      "success_rate": 0.8181818181818182,
+      "by_category": {
+        "bug_fix": {
+          "n": 7,
+          "success_rate": 1.0
+        },
+        "paper_extraction": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_locate": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 7,
+          "success_rate": 0.42857142857142855
+        }
+      },
+      "avg_repairs": 0,
+      "avg_tool_calls": 2,
+      "avg_tool_calls_failed": 0,
+      "avg_llm_calls": 1,
+      "avg_tokens": 11216.545454545454,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 14.9,
+      "p95_wall_time_s": 31.2,
+      "p95_tokens": 19838,
+      "success_after_repair": 0,
+      "success_first_try": 18,
+      "claimed_but_wrong": 4,
+      "failure_kinds": {},
+      "failures_seen": {}
+    },
+    "free_text_tools": {
+      "n": 22,
+      "success_rate": 0.9545454545454546,
+      "by_category": {
+        "bug_fix": {
+          "n": 7,
+          "success_rate": 1.0
+        },
+        "paper_extraction": {
+          "n": 4,
+          "success_rate": 1.0
+        },
+        "repo_locate": {
+          "n": 4,
+          "success_rate": 0.75
+        },
+        "repo_run": {
+          "n": 7,
+          "success_rate": 1.0
+        }
+      },
+      "avg_repairs": 0.5454545454545454,
+      "avg_tool_calls": 14.090909090909092,
+      "avg_tool_calls_failed": 1.2727272727272727,
+      "avg_llm_calls": 17.136363636363637,
+      "avg_tokens": 61890.77272727273,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 151.27727272727273,
+      "p95_wall_time_s": 394.4,
+      "p95_tokens": 201636,
+      "success_after_repair": 7,
+      "success_first_try": 14,
+      "claimed_but_wrong": 1,
+      "failure_kinds": {},
+      "failures_seen": {
+        "budget_exhausted": 2,
+        "no_progress": 4,
+        "node_timeout": 1,
+        "nonzero_exit": 4,
+        "verify_mismatch": 3,
+        "file_not_found": 1
+      }
+    }
+  },
+  "categories": [
+    "bug_fix",
+    "paper_extraction",
+    "repo_locate",
+    "repo_run"
+  ],
+  "n_rows": 88,
+  "meta": {
+    "model": "openai/deepseek-v4.1-flash",
+    "configs": [
+      "free_text_tools",
+      "full",
+      "no_repair",
+      "single_call"
+    ],
+    "tasks": [
+      "bugfix_nameerror_freq",
+      "bugfix_ngram_offbyone",
+      "bugfix_syntax_error",
+      "bugfix_tfidf_sign",
+      "bugfix_tokenize_none",
+      "bugfix_topk_order",
+      "bugfix_two_bugs",
+      "locate_mini_mlp",
+      "locate_pi05_code",
+      "locate_pi05_readme",
+      "locate_textstats",
+      "paper_attention_training",
+      "paper_lora_setup",
+      "paper_pi05_overview",
+      "paper_resnet_training",
+      "run_mini_mlp",
+      "run_mini_mlp_seed7",
+      "run_pi05_episode_gaps",
+      "run_pi05_loss_mean",
+      "run_pi05_loss_min",
+      "run_textstats_cli",
+      "run_textstats_tfidf"
+    ],
+    "repeats": 1,
+    "timestamp": "20260915-181754",
+    "merged_from": [
+      "20260915-172321",
+      "20260915-180949"
+    ]
+  }
+}

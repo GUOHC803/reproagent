@@ -1,0 +1,144 @@
+{
+  "configs": {
+    "full": {
+      "n": 5,
+      "success_rate": 1.0,
+      "by_category": {
+        "bug_fix": {
+          "n": 1,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 4,
+          "success_rate": 1.0
+        }
+      },
+      "avg_repairs": 0,
+      "avg_tool_calls": 16.4,
+      "avg_tool_calls_failed": 0.4,
+      "avg_llm_calls": 10.4,
+      "avg_tokens": 49133,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 71.9,
+      "p95_wall_time_s": 155.6,
+      "p95_tokens": 109690,
+      "success_after_repair": 0,
+      "success_first_try": 5,
+      "claimed_but_wrong": 0,
+      "failure_kinds": {},
+      "failures_seen": {}
+    },
+    "no_repair": {
+      "n": 5,
+      "success_rate": 0.8,
+      "by_category": {
+        "bug_fix": {
+          "n": 1,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 4,
+          "success_rate": 0.75
+        }
+      },
+      "avg_repairs": 0,
+      "avg_tool_calls": 16.4,
+      "avg_tool_calls_failed": 0.8,
+      "avg_llm_calls": 10,
+      "avg_tokens": 51208.8,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 65.25999999999999,
+      "p95_wall_time_s": 168.7,
+      "p95_tokens": 111778,
+      "success_after_repair": 0,
+      "success_first_try": 4,
+      "claimed_but_wrong": 1,
+      "failure_kinds": {},
+      "failures_seen": {
+        "nonzero_exit": 1
+      }
+    },
+    "single_call": {
+      "n": 5,
+      "success_rate": 0.6,
+      "by_category": {
+        "bug_fix": {
+          "n": 1,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 4,
+          "success_rate": 0.5
+        }
+      },
+      "avg_repairs": 0,
+      "avg_tool_calls": 2.4,
+      "avg_tool_calls_failed": 0,
+      "avg_llm_calls": 1,
+      "avg_tokens": 16097.4,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 31.66,
+      "p95_wall_time_s": 102.5,
+      "p95_tokens": 30602,
+      "success_after_repair": 0,
+      "success_first_try": 3,
+      "claimed_but_wrong": 2,
+      "failure_kinds": {},
+      "failures_seen": {}
+    },
+    "free_text_tools": {
+      "n": 5,
+      "success_rate": 1.0,
+      "by_category": {
+        "bug_fix": {
+          "n": 1,
+          "success_rate": 1.0
+        },
+        "repo_run": {
+          "n": 4,
+          "success_rate": 1.0
+        }
+      },
+      "avg_repairs": 0.2,
+      "avg_tool_calls": 15.2,
+      "avg_tool_calls_failed": 0.6,
+      "avg_llm_calls": 18,
+      "avg_tokens": 72302.4,
+      "avg_cost_usd": 0.0,
+      "avg_wall_time_s": 81.74,
+      "p95_wall_time_s": 210.3,
+      "p95_tokens": 215804,
+      "success_after_repair": 1,
+      "success_first_try": 4,
+      "claimed_but_wrong": 0,
+      "failure_kinds": {},
+      "failures_seen": {
+        "budget_exhausted": 1,
+        "file_not_found": 1
+      }
+    }
+  },
+  "categories": [
+    "bug_fix",
+    "repo_run"
+  ],
+  "n_rows": 20,
+  "meta": {
+    "model": "openai/deepseek-v4.1-flash",
+    "configs": [
+      "full",
+      "no_repair",
+      "single_call",
+      "free_text_tools"
+    ],
+    "tasks": [
+      "bugfix_two_bugs",
+      "run_mini_mlp_seed7",
+      "run_pi05_episode_gaps",
+      "run_pi05_loss_mean",
+      "run_textstats_tfidf"
+    ],
+    "repeats": 1,
+    "timestamp": "20260915-180949"
+  }
+}

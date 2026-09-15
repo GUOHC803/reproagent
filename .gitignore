@@ -12,3 +12,4 @@ evals/results_smoke/
 evals/fixtures/papers/*.pdf
 .reproagent/
 data/
+evals/results/*/trace*.sqlite3
